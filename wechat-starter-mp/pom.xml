@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>app.myoss</groupId>
+        <artifactId>wechat-starter-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>wechat-starter-mp</artifactId>
+    <name>wechat-starter-mp</name>
+
+    <description>myoss open source project, wechat-starter written in Java</description>
+    <url>https://github.com/myoss/wechat-starter</url>
+    <inceptionYear>2018</inceptionYear>
+
+    <scm>
+        <url>https://github.com/myoss/wechat-starter</url>
+        <connection>scm:git:https://github.com/myoss/wechat-starter.git</connection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Jerry.Chen</name>
+            <email>jerry.work@aliyun.com</email>
+            <organizationUrl>https://github.com/myoss</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>app.myoss</groupId>
+            <artifactId>wechat-starter-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-mp</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.myoss</groupId>
+        <artifactId>phoenix-parent</artifactId>
+        <version>1.1.3.RELEASE</version>
+    </parent>
+
+    <groupId>app.myoss</groupId>
+    <artifactId>wechat-starter-parent</artifactId>
+    <name>wechat-starter-parent</name>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <description>myoss open source project, wechat-starter written in Java</description>
+    <url>https://github.com/myoss/wechat-starter</url>
+    <inceptionYear>2018</inceptionYear>
+
+    <scm>
+        <url>https://github.com/myoss/wechat-starter</url>
+        <connection>scm:git:https://github.com/myoss/wechat-starter.git</connection>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Jerry.Chen</name>
+            <email>jerry.work@aliyun.com</email>
+            <organizationUrl>https://github.com/myoss</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+        <wechat-starter-parent.version>1.0.0-SNAPSHOT</wechat-starter-parent.version>
+        <phoenix-parent.version>1.1.3.RELEASE</phoenix-parent.version>
+        <phoenix-core.version>1.1.5.RELEASE</phoenix-core.version>
+        <weixin-java-tools.version>3.1.0</weixin-java-tools.version>
+    </properties>
+
+    <modules>
+        <module>wechat-starter-core</module>
+        <module>wechat-starter-mp</module>
+    </modules>
+
+    <dependencies>
+        <!-- myoss cloud dependencies start -->
+        <dependency>
+            <groupId>com.github.myoss</groupId>
+            <artifactId>phoenix-core</artifactId>
+            <version>${phoenix-core.version}</version>
+        </dependency>
+        <!-- myoss cloud dependencies end -->
+
+        <!-- spring boot start -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- spring boot end -->
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>app.myoss</groupId>
+                <artifactId>wechat-starter-core</artifactId>
+                <version>${wechat-starter-parent.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>app.myoss</groupId>
+                <artifactId>wechat-starter-mp</artifactId>
+                <version>${wechat-starter-parent.version}</version>
+            </dependency>
+
+            <!-- wechat java tools begin -->
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-common</artifactId>
+                <version>${weixin-java-tools.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.binarywang</groupId>
+                <artifactId>weixin-java-mp</artifactId>
+                <version>${weixin-java-tools.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.apache.httpcomponents</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- wechat java tools end -->
+        </dependencies>
+    </dependencyManagement>
+</project>
