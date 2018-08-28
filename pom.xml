@@ -9,7 +9,7 @@
         <version>1.1.3.RELEASE</version>
     </parent>
 
-    <groupId>app.myoss</groupId>
+    <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-parent</artifactId>
     <name>wechat-starter-parent</name>
     <version>1.0.0-SNAPSHOT</version>
@@ -74,12 +74,12 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>app.myoss</groupId>
+                <groupId>app.myoss.wechat</groupId>
                 <artifactId>wechat-starter-core</artifactId>
                 <version>${wechat-starter-parent.version}</version>
             </dependency>
             <dependency>
-                <groupId>app.myoss</groupId>
+                <groupId>app.myoss.wechat</groupId>
                 <artifactId>wechat-starter-mp</artifactId>
                 <version>${wechat-starter-parent.version}</version>
             </dependency>
