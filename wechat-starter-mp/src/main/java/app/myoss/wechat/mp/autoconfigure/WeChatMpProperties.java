@@ -42,6 +42,10 @@ public class WeChatMpProperties {
      */
     private boolean               enabled;
     /**
+     * 微信公众号的属性配置，可以设置1个
+     */
+    private WeChatMp              config;
+    /**
      * 微信公众号的属性配置，可以设置多个
      */
     private Map<String, WeChatMp> configs;
