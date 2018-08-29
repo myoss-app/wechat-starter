@@ -76,7 +76,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
      * @param restTemplate Http RestTemplate
      * @param lockService 缓存锁服务接口
      * @param lockTime 锁的过期时间
-     * @param redisTemplate Spring RedisTemplate
+     * @param redisTemplate String RedisTemplate
      */
     public WeChatMpDynamicConfigInRedisStorage(WeChatMp weChatMp, RestTemplate restTemplate, LockService lockService,
                                                int lockTime, StringRedisTemplate redisTemplate) {

@@ -77,6 +77,10 @@ public class WeChatMpProperties {
     @Setter
     public static class WeChatMp {
         /**
+         * 公众号的名称，用于识别当前配置属于哪个公众号
+         */
+        private String appName;
+        /**
          * 开发者ID(AppID)
          */
         private String appId;
