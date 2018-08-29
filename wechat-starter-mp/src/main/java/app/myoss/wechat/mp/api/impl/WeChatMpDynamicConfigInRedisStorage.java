@@ -94,7 +94,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
             return this.redisTemplate.opsForValue().get(this.accessTokenKey);
         }
 
-        String lockKey = "getAccessTokenLockKey" + this.accessTokenKey;
+        String lockKey = "getAccessTokenLockKey_" + this.accessTokenKey;
         return lockService.executeByLock(lockKey, getLockTime(), new LockFunctionGeneric<String>() {
             @Override
             public String onLockSuccess() {
@@ -131,7 +131,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
 
     @Override
     public void updateAccessToken(String accessToken, int expiresInSeconds) {
-        String lockKey = "updateAccessTokenLockKey" + this.accessTokenKey;
+        String lockKey = "updateAccessTokenLockKey_" + this.accessTokenKey;
         lockService.executeByLock(lockKey, getLockTime(), new LockFunction() {
             @Override
             public void onLockSuccess() {
@@ -147,7 +147,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
 
     @Override
     public void expireAccessToken() {
-        String lockKey = "expireAccessTokenLockKey" + this.accessTokenKey;
+        String lockKey = "expireAccessTokenLockKey_" + this.accessTokenKey;
         lockService.executeByLock(lockKey, getLockTime(), new LockFunction() {
             @Override
             public void onLockSuccess() {
