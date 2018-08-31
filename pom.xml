@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.myoss</groupId>
-        <artifactId>phoenix-parent</artifactId>
-        <version>1.1.3.RELEASE</version>
+        <groupId>app.myoss.cloud</groupId>
+        <artifactId>spring-boot-parent</artifactId>
+        <version>2.0.1.RELEASE</version>
     </parent>
 
     <groupId>app.myoss.wechat</groupId>
@@ -16,12 +16,12 @@
     <packaging>pom</packaging>
 
     <description>myoss open source project, wechat-starter written in Java</description>
-    <url>https://github.com/myoss/wechat-starter</url>
+    <url>https://github.com/myoss-app/wechat-starter</url>
     <inceptionYear>2018</inceptionYear>
 
     <scm>
-        <url>https://github.com/myoss/wechat-starter</url>
-        <connection>scm:git:https://github.com/myoss/wechat-starter.git</connection>
+        <url>https://github.com/myoss-app/wechat-starter</url>
+        <connection>scm:git:https://github.com/myoss-app/wechat-starter.git</connection>
     </scm>
 
     <licenses>
@@ -37,14 +37,13 @@
         <developer>
             <name>Jerry.Chen</name>
             <email>jerry.work@aliyun.com</email>
-            <organizationUrl>https://github.com/myoss</organizationUrl>
+            <organizationUrl>https://github.com/myoss-app</organizationUrl>
+            <url>https://github.com/myoss</url>
         </developer>
     </developers>
 
     <properties>
         <wechat-starter-parent.version>1.0.0.RELEASE</wechat-starter-parent.version>
-        <phoenix-parent.version>1.1.3.RELEASE</phoenix-parent.version>
-        <phoenix-core.version>1.1.5.RELEASE</phoenix-core.version>
         <weixin-java-tools.version>3.1.0</weixin-java-tools.version>
     </properties>
 
@@ -56,9 +55,8 @@
     <dependencies>
         <!-- myoss cloud dependencies start -->
         <dependency>
-            <groupId>com.github.myoss</groupId>
-            <artifactId>phoenix-core</artifactId>
-            <version>${phoenix-core.version}</version>
+            <groupId>app.myoss.cloud.boot</groupId>
+            <artifactId>myoss-starter-core</artifactId>
         </dependency>
         <!-- myoss cloud dependencies end -->
 

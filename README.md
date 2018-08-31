@@ -1,7 +1,7 @@
-# Phoenix Maven Plugin
+# WeChat Plugin
 
 [![Maven Central](https://img.shields.io/maven-central/v/app.myoss.wechat/wechat-starter-parent.svg)](https://maven-badges.herokuapp.com/maven-central/app.myoss.wechat/wechat-starter-parent/)
-[![GitHub release](https://img.shields.io/github/release/myoss-app/wechat-starter-parent.svg)](https://github.com/myoss-app/wechat-starter/releases)
+[![GitHub release](https://img.shields.io/github/release/myoss-app/wechat-starter.svg)](https://github.com/myoss-app/wechat-starter/releases)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 ## Documentation

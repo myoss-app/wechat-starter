@@ -47,6 +47,10 @@
             <groupId>app.myoss.wechat</groupId>
             <artifactId>wechat-starter-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>app.myoss.cloud.boot</groupId>
+            <artifactId>myoss-starter-cache</artifactId>
+        </dependency>
 
         <!-- http client start -->
         <dependency>
@@ -56,14 +60,6 @@
             <optional>true</optional>
         </dependency>
         <!-- http client end -->
-
-        <!-- redis start -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!-- redis end -->
 
         <dependency>
             <groupId>com.github.binarywang</groupId>

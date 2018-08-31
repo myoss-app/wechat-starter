@@ -22,11 +22,10 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.client.RestTemplate;
 
-import com.github.myoss.phoenix.core.cache.lock.LockService;
-import com.github.myoss.phoenix.core.cache.lock.functions.LockFunction;
-import com.github.myoss.phoenix.core.cache.lock.functions.LockFunctionGeneric;
-import com.github.myoss.phoenix.core.exception.BizRuntimeException;
-
+import app.myoss.cloud.cache.lock.LockService;
+import app.myoss.cloud.cache.lock.functions.LockFunction;
+import app.myoss.cloud.cache.lock.functions.LockFunctionGeneric;
+import app.myoss.cloud.core.exception.BizRuntimeException;
 import app.myoss.wechat.mp.api.WeChatMpDynamicConfigStorage;
 import app.myoss.wechat.mp.autoconfigure.WeChatMpProperties.WeChatMp;
 import lombok.Getter;
