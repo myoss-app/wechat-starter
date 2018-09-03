@@ -47,6 +47,13 @@ public interface WeChatMpDynamicConfigStorage {
     boolean isAccessTokenExpired();
 
     /**
+     * 获取 access_token 过期时间
+     *
+     * @return 过期时间，单位：秒
+     */
+    long getExpiresTime();
+
+    /**
      * 更新 access_token 值
      *
      * @param accessToken 新的 access_token 值

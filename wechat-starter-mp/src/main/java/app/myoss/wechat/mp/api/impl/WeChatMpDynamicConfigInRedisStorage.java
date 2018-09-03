@@ -97,17 +97,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
         return lockService.executeByLock(lockKey, getLockTime(), new LockFunctionGeneric<String>() {
             @Override
             public String onLockSuccess() {
-                WeChatMp weChatMp = getWeChatMp();
-                String url = String.format(WxMpService.GET_ACCESS_TOKEN_URL, weChatMp.getAppId(),
-                        weChatMp.getAppSecret());
-                String resultContent = restTemplate.getForObject(url, String.class);
-                WxError error = WxError.fromJson(resultContent, WxType.MP);
-                if (error.getErrorCode() != 0) {
-                    throw new BizRuntimeException(error.toString());
-                }
-                WxAccessToken accessToken = WxAccessToken.fromJson(resultContent);
-                updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
-                return accessToken.getAccessToken();
+                return getAccessTokenFromWxMpService();
             }
 
             @Override
@@ -115,6 +105,24 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
                 throw new BizRuntimeException("getAccessToken lock failed");
             }
         });
+    }
+
+    /**
+     * 从微信公众号服务获取 access_token 值
+     *
+     * @return access_token 值
+     */
+    public String getAccessTokenFromWxMpService() {
+        WeChatMp weChatMp = getWeChatMp();
+        String url = String.format(WxMpService.GET_ACCESS_TOKEN_URL, weChatMp.getAppId(), weChatMp.getAppSecret());
+        String resultContent = restTemplate.getForObject(url, String.class);
+        WxError error = WxError.fromJson(resultContent, WxType.MP);
+        if (error.getErrorCode() != 0) {
+            throw new BizRuntimeException(error.toString());
+        }
+        WxAccessToken accessToken = WxAccessToken.fromJson(resultContent);
+        updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
+        return accessToken.getAccessToken();
     }
 
     @Override
@@ -126,6 +134,12 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
     public boolean isAccessTokenExpired() {
         Long expire = this.redisTemplate.getExpire(this.accessTokenKey);
         return expire == null || expire < 2;
+    }
+
+    @Override
+    public long getExpiresTime() {
+        Long expire = this.redisTemplate.getExpire(this.accessTokenKey);
+        return (expire != null ? expire : -2);
     }
 
     @Override

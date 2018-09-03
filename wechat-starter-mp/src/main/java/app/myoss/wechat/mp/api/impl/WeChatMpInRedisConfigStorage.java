@@ -153,7 +153,7 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public long getExpiresTime() {
-        return 0;
+        return weChatMpDynamicConfigStorage.getExpiresTime();
     }
 
     @Override
