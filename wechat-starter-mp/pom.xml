@@ -13,12 +13,12 @@
     <name>wechat-starter-mp</name>
 
     <description>myoss open source project, wechat-starter written in Java</description>
-    <url>https://github.com/myoss/wechat-starter</url>
+    <url>https://github.com/myoss-app/wechat-starter</url>
     <inceptionYear>2018</inceptionYear>
 
     <scm>
-        <url>https://github.com/myoss/wechat-starter</url>
-        <connection>scm:git:https://github.com/myoss/wechat-starter.git</connection>
+        <url>https://github.com/myoss-app/wechat-starter</url>
+        <connection>scm:git:https://github.com/myoss-app/wechat-starter.git</connection>
     </scm>
 
     <licenses>
@@ -34,7 +34,8 @@
         <developer>
             <name>Jerry.Chen</name>
             <email>jerry.work@aliyun.com</email>
-            <organizationUrl>https://github.com/myoss</organizationUrl>
+            <organizationUrl>https://github.com/myoss-app</organizationUrl>
+            <url>https://github.com/myoss</url>
         </developer>
     </developers>
 
@@ -43,27 +44,22 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>app.myoss.wechat</groupId>
-            <artifactId>wechat-starter-core</artifactId>
-        </dependency>
+        <!-- myoss cloud dependencies start -->
         <dependency>
             <groupId>app.myoss.cloud.boot</groupId>
             <artifactId>myoss-starter-cache</artifactId>
         </dependency>
-
-        <!-- http client start -->
         <dependency>
-            <groupId>com.squareup.okhttp3</groupId>
-            <artifactId>okhttp</artifactId>
-            <version>${squareup-okhttp3.version}</version>
-            <optional>true</optional>
+            <groupId>app.myoss.cloud.boot</groupId>
+            <artifactId>myoss-starter-web</artifactId>
         </dependency>
-        <!-- http client end -->
+        <!-- myoss cloud dependencies end -->
 
+        <!-- wechat java tools begin -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-mp</artifactId>
         </dependency>
+        <!-- wechat java tools end -->
     </dependencies>
 </project>

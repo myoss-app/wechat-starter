@@ -6,7 +6,7 @@
     <parent>
         <groupId>app.myoss.cloud</groupId>
         <artifactId>spring-boot-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+        <version>2.0.2.RELEASE</version>
     </parent>
 
     <groupId>app.myoss.wechat</groupId>
@@ -43,7 +43,6 @@
     </developers>
 
     <properties>
-        <wechat-starter-parent.version>1.0.0.RELEASE</wechat-starter-parent.version>
         <weixin-java-tools.version>3.1.0</weixin-java-tools.version>
     </properties>
 
@@ -55,33 +54,24 @@
     <dependencies>
         <!-- myoss cloud dependencies start -->
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jcl</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>app.myoss.cloud.boot</groupId>
             <artifactId>myoss-starter-core</artifactId>
         </dependency>
         <!-- myoss cloud dependencies end -->
-
-        <!-- spring boot start -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!-- spring boot end -->
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>app.myoss.wechat</groupId>
-                <artifactId>wechat-starter-core</artifactId>
-                <version>${wechat-starter-parent.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>app.myoss.wechat</groupId>
-                <artifactId>wechat-starter-mp</artifactId>
-                <version>${wechat-starter-parent.version}</version>
-            </dependency>
-
             <!-- wechat java tools begin -->
             <dependency>
                 <groupId>com.github.binarywang</groupId>
