@@ -6,19 +6,19 @@
     <parent>
         <groupId>app.myoss.wechat</groupId>
         <artifactId>wechat-starter-parent</artifactId>
-        <version>1.0.0.RELEASE</version>
+        <version>1.0.1.RELEASE</version>
     </parent>
 
     <artifactId>wechat-starter-core</artifactId>
     <name>wechat-starter-core</name>
 
     <description>myoss open source project, wechat-starter written in Java</description>
-    <url>https://github.com/myoss/wechat-starter</url>
+    <url>https://github.com/myoss-app/wechat-starter</url>
     <inceptionYear>2018</inceptionYear>
 
     <scm>
-        <url>https://github.com/myoss/wechat-starter</url>
-        <connection>scm:git:https://github.com/myoss/wechat-starter.git</connection>
+        <url>https://github.com/myoss-app/wechat-starter</url>
+        <connection>scm:git:https://github.com/myoss-app/wechat-starter.git</connection>
     </scm>
 
     <licenses>
@@ -34,7 +34,8 @@
         <developer>
             <name>Jerry.Chen</name>
             <email>jerry.work@aliyun.com</email>
-            <organizationUrl>https://github.com/myoss</organizationUrl>
+            <organizationUrl>https://github.com/myoss-app</organizationUrl>
+            <url>https://github.com/myoss</url>
         </developer>
     </developers>
 

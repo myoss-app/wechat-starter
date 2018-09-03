@@ -11,7 +11,7 @@
 ## Download
 
 - [maven][1]
-- [the latest JAR][2]  
+- [the latest JAR][2]
 
 [1]: http://repo1.maven.org/maven2/app/myoss/wechat/wechat-starter-parent/  
 [2]: https://search.maven.org/remote_content?g=app.myoss.wechat&a=wechat-starter-parent&v=LATEST
@@ -22,7 +22,7 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-parent</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
 </dependency>
 ```
 
@@ -30,7 +30,7 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-core</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
 </dependency>
 ```
 
@@ -38,6 +38,6 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-mp</artifactId>
-    <version>1.0.0.RELEASE</version>
+    <version>1.0.1.RELEASE</version>
 </dependency>
 ```
