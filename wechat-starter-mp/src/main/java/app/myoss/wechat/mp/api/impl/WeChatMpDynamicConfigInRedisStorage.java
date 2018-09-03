@@ -114,7 +114,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
      */
     public String getAccessTokenFromWxMpService() {
         WeChatMp weChatMp = getWeChatMp();
-        String url = String.format(WxMpService.GET_ACCESS_TOKEN_URL, weChatMp.getAppId(), weChatMp.getAppSecret());
+        String url = String.format(getAccessTokenUrl(), weChatMp.getAppId(), weChatMp.getAppSecret());
         String resultContent = restTemplate.getForObject(url, String.class);
         WxError error = WxError.fromJson(resultContent, WxType.MP);
         if (error.getErrorCode() != 0) {
@@ -123,6 +123,15 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
         WxAccessToken accessToken = WxAccessToken.fromJson(resultContent);
         updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
         return accessToken.getAccessToken();
+    }
+
+    /**
+     * 从微信公众号服务获取 access_token 值的请求 url
+     *
+     * @return access_token 服务 url
+     */
+    public String getAccessTokenUrl() {
+        return WxMpService.GET_ACCESS_TOKEN_URL;
     }
 
     @Override
