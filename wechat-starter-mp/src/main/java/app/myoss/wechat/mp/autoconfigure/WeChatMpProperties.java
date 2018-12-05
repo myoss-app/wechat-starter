@@ -51,6 +51,21 @@ public class WeChatMpProperties {
     private Map<String, WeChatMp> configs;
 
     /**
+     * 获取微信公众号的属性配置，根据 customAppId
+     *
+     * @param customAppId 用户自定义AppID
+     * @return 微信公众号的属性配置
+     */
+    public WeChatMp getByCustomAppId(String customAppId) {
+        for (WeChatMp weChatMp : configs.values()) {
+            if (customAppId.equals(weChatMp.getCustomAppId())) {
+                return weChatMp;
+            }
+        }
+        return null;
+    }
+
+    /**
      * 获取微信公众号的属性配置，根据 AppId
      *
      * @param appId 开发者ID(AppID)
@@ -80,6 +95,10 @@ public class WeChatMpProperties {
          * 公众号的名称，用于识别当前配置属于哪个公众号
          */
         private String appName;
+        /**
+         * 用户自定义AppID
+         */
+        private String customAppId;
         /**
          * 开发者ID(AppID)
          */
