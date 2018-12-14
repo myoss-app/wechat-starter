@@ -17,6 +17,8 @@
 
 package app.myoss.wechat.mp.api;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * 微信公众号 "动态配置"（如：access_token）存储接口
  *
@@ -65,4 +67,47 @@ public interface WeChatMpDynamicConfigStorage {
      * 强制将 access_token 过期掉
      */
     void expireAccessToken();
+
+    /**
+     * 获取 redis lock 锁
+     *
+     * @param key 锁的名字
+     * @return redis lock 锁实例
+     */
+    Lock getLock(String key);
+
+    /**
+     * 获取 jsapi_ticket 值，请使用定时任务调用此接口进行刷新 jsapi_ticket 值
+     *
+     * @param forceRefresh 是否强制刷新
+     * @return access_token 值
+     */
+    String getJsapiTicket(boolean forceRefresh);
+
+    /**
+     * 获取 jsapi_ticket 值
+     *
+     * @return jsapi_ticket 值
+     */
+    String getJsapiTicket();
+
+    /**
+     * 判断 jsapi_ticket 是否过期
+     *
+     * @return true: 过期; false: 未过期
+     */
+    boolean isJsapiTicketExpired();
+
+    /**
+     * 强制将 jsapi_ticket 过期掉
+     */
+    void expireJsapiTicket();
+
+    /**
+     * 更新 jsapi_ticket 值
+     *
+     * @param jsapiTicket 新的 jsapi_ticket 值
+     * @param expiresInSeconds 过期时间，单位：秒
+     */
+    void updateJsapiTicket(String jsapiTicket, int expiresInSeconds);
 }

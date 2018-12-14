@@ -36,4 +36,15 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
     public String getAccessToken(boolean forceRefresh) {
         return getWxMpConfigStorage().getAccessToken();
     }
+
+    /**
+     * 获取 jsapi_ticket 值，使用外部的定时任务去刷新 jsapi_ticket 值
+     *
+     * @param forceRefresh 这里不会去强制刷新，使用定时任务统一去触发
+     * @return jsapi_ticket 值
+     */
+    @Override
+    public String getJsapiTicket(boolean forceRefresh) {
+        return getWxMpConfigStorage().getJsapiTicket();
+    }
 }

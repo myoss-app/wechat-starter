@@ -20,10 +20,14 @@ package app.myoss.wechat.mp.api.impl;
 import java.io.File;
 import java.util.concurrent.locks.Lock;
 
+import org.springframework.data.redis.core.StringRedisTemplate;
+
+import app.myoss.cloud.cache.lock.LockService;
 import app.myoss.wechat.mp.api.WeChatMpDynamicConfigStorage;
 import app.myoss.wechat.mp.autoconfigure.WeChatMpProperties.WeChatMp;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.util.http.apache.ApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
@@ -34,6 +38,7 @@ import me.chanjar.weixin.mp.api.WxMpConfigStorage;
  * @author Jerry.Chen
  * @since 2018年8月28日 下午3:48:00
  */
+@Setter
 @Getter
 @AllArgsConstructor
 public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
@@ -45,6 +50,18 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
      * 微信公众号 "动态配置"（如：access_token）存储服务
      */
     private WeChatMpDynamicConfigStorage weChatMpDynamicConfigStorage;
+    /**
+     * 缓存锁服务接口
+     */
+    private LockService                  lockService;
+    /**
+     * 锁的过期时间
+     */
+    private int                          lockTime;
+    /**
+     * Spring RedisTemplate
+     */
+    private StringRedisTemplate          redisTemplate;
 
     @Override
     public String getAccessToken() {
@@ -53,7 +70,7 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public Lock getAccessTokenLock() {
-        throw new UnsupportedOperationException();
+        return weChatMpDynamicConfigStorage.getLock("accessTokenLock");
     }
 
     @Override
@@ -68,37 +85,37 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public void updateAccessToken(WxAccessToken accessToken) {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
     }
 
     @Override
     public void updateAccessToken(String accessToken, int expiresInSeconds) {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.updateAccessToken(accessToken, expiresInSeconds);
     }
 
     @Override
     public String getJsapiTicket() {
-        return null;
+        return weChatMpDynamicConfigStorage.getJsapiTicket();
     }
 
     @Override
     public Lock getJsapiTicketLock() {
-        return null;
+        return weChatMpDynamicConfigStorage.getLock("jsApiTicketLock");
     }
 
     @Override
     public boolean isJsapiTicketExpired() {
-        return false;
+        return weChatMpDynamicConfigStorage.isJsapiTicketExpired();
     }
 
     @Override
     public void expireJsapiTicket() {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.expireJsapiTicket();
     }
 
     @Override
     public void updateJsapiTicket(String jsapiTicket, int expiresInSeconds) {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.updateJsapiTicket(jsapiTicket, expiresInSeconds);
     }
 
     @Override
@@ -108,7 +125,7 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public Lock getCardApiTicketLock() {
-        return null;
+        return weChatMpDynamicConfigStorage.getLock("cardApiTicketLock");
     }
 
     @Override

@@ -17,10 +17,15 @@
 
 package app.myoss.wechat.mp.api.impl;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.client.RestTemplate;
+
+import com.alibaba.fastjson.JSONObject;
 
 import app.myoss.cloud.cache.lock.LockService;
 import app.myoss.cloud.cache.lock.functions.LockFunction;
@@ -42,31 +47,37 @@ import me.chanjar.weixin.mp.api.WxMpService;
  */
 @Getter
 public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfigStorage {
-    private static final String ACCESS_TOKEN_KEY = "wechat_mp_access_token_";
+    private static final String          ACCESS_TOKEN_KEY   = "wechat_mp_access_token_";
+    private static final String          JSAPI_TICKET_KEY   = "wechat_mp_jsapi_ticket_";
     /**
      * 微信公众号的属性配置
      */
-    private WeChatMp            weChatMp;
+    private WeChatMp                     weChatMp;
     /**
      * Http RestTemplate
      */
-    private RestTemplate        restTemplate;
+    private RestTemplate                 restTemplate;
     /**
      * 缓存锁服务接口
      */
-    private LockService         lockService;
+    private LockService                  lockService;
     /**
      * 锁的过期时间
      */
-    private int                 lockTime;
+    private int                          lockTime;
     /**
      * Spring RedisTemplate
      */
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate          redisTemplate;
     /**
      * 每个公众号生成独有的存储key
      */
-    private String              accessTokenKey;
+    private String                       accessTokenKey;
+    /**
+     * 每个公众号生成独有的存储key
+     */
+    private String                       jsapiTicketKey;
+    private Map<String, LockService4Jdk> lockService4JdkMap = new ConcurrentHashMap<>();
 
     /**
      * 微信公众号 "动态配置"（如：access_token）使用 Redis 存储
@@ -85,6 +96,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
         this.lockTime = lockTime;
         this.redisTemplate = redisTemplate;
         this.accessTokenKey = ACCESS_TOKEN_KEY.concat(weChatMp.getAppId());
+        this.jsapiTicketKey = JSAPI_TICKET_KEY.concat(weChatMp.getAppId());
     }
 
     @Override
@@ -179,6 +191,97 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
             @Override
             public void onLockFailed() {
                 throw new BizRuntimeException("expireAccessToken lock failed");
+            }
+        });
+    }
+
+    @Override
+    public Lock getLock(String key) {
+        return lockService4JdkMap.computeIfAbsent(key, s -> new LockService4Jdk(key, lockService));
+    }
+
+    @Override
+    public String getJsapiTicket(boolean forceRefresh) {
+        if (!forceRefresh && !isJsapiTicketExpired()) {
+            return this.redisTemplate.opsForValue().get(this.jsapiTicketKey);
+        }
+
+        String lockKey = "getJsapiTicketLockKey_" + this.jsapiTicketKey;
+        return lockService.executeByLock(lockKey, getLockTime(), new LockFunctionGeneric<String>() {
+            @Override
+            public String onLockSuccess() {
+                return getJsapiTicketFromWxMpService();
+            }
+
+            @Override
+            public String onLockFailed() {
+                throw new BizRuntimeException("getJsapiTicket lock failed");
+            }
+        });
+    }
+
+    @Override
+    public String getJsapiTicket() {
+        return getJsapiTicket(false);
+    }
+
+    /**
+     * 从微信公众号服务获取 jsapi_ticket 值
+     *
+     * @return jsapi_ticket 值
+     */
+    public String getJsapiTicketFromWxMpService() {
+        String responseContent = restTemplate.getForObject(getJsapiTicketUrl(), String.class);
+        JSONObject tmpJsonObject = JSONObject.parseObject(responseContent);
+        String jsapiTicket = tmpJsonObject.getString("ticket");
+        int expiresInSeconds = tmpJsonObject.getIntValue("expires_in");
+        updateJsapiTicket(jsapiTicket, expiresInSeconds);
+        return jsapiTicket;
+    }
+
+    /**
+     * 从微信公众号服务获取 jsapi_ticket 值的请求 url
+     *
+     * @return jsapi_ticket 服务 url
+     */
+    public String getJsapiTicketUrl() {
+        return WxMpService.GET_JSAPI_TICKET_URL;
+    }
+
+    @Override
+    public boolean isJsapiTicketExpired() {
+        Long expire = this.redisTemplate.getExpire(this.jsapiTicketKey);
+        return expire == null || expire < 2;
+    }
+
+    @Override
+    public void expireJsapiTicket() {
+        String lockKey = "expireJsapiTicketLockKey_" + this.jsapiTicketKey;
+        lockService.executeByLock(lockKey, getLockTime(), new LockFunction() {
+            @Override
+            public void onLockSuccess() {
+                redisTemplate.expire(jsapiTicketKey, 0, TimeUnit.SECONDS);
+            }
+
+            @Override
+            public void onLockFailed() {
+                throw new BizRuntimeException("expireJsapiTicket lock failed");
+            }
+        });
+    }
+
+    @Override
+    public void updateJsapiTicket(String jsapiTicket, int expiresInSeconds) {
+        String lockKey = "updateJsapiTicketLockKey_" + this.jsapiTicketKey;
+        lockService.executeByLock(lockKey, getLockTime(), new LockFunction() {
+            @Override
+            public void onLockSuccess() {
+                redisTemplate.opsForValue().set(jsapiTicketKey, jsapiTicket, expiresInSeconds - 200, TimeUnit.SECONDS);
+            }
+
+            @Override
+            public void onLockFailed() {
+                throw new BizRuntimeException("updateJsapiTicket lock failed");
             }
         });
     }
