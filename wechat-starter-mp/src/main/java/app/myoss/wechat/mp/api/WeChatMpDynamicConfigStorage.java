@@ -99,6 +99,13 @@ public interface WeChatMpDynamicConfigStorage {
     boolean isJsapiTicketExpired();
 
     /**
+     * 获取 jsapi_ticket 过期时间
+     *
+     * @return 过期时间，单位：秒
+     */
+    long getJsapiTicketExpiresTime();
+
+    /**
      * 强制将 jsapi_ticket 过期掉
      */
     void expireJsapiTicket();

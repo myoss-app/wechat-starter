@@ -154,7 +154,7 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
     @Override
     public boolean isAccessTokenExpired() {
         Long expire = this.redisTemplate.getExpire(this.accessTokenKey);
-        return expire == null || expire < 2;
+        return (expire == null || expire < 2);
     }
 
     @Override
@@ -251,7 +251,13 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
     @Override
     public boolean isJsapiTicketExpired() {
         Long expire = this.redisTemplate.getExpire(this.jsapiTicketKey);
-        return expire == null || expire < 2;
+        return (expire == null || expire < 2);
+    }
+
+    @Override
+    public long getJsapiTicketExpiresTime() {
+        Long expire = this.redisTemplate.getExpire(this.jsapiTicketKey);
+        return (expire != null ? expire : -2);
     }
 
     @Override
