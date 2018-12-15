@@ -231,7 +231,9 @@ public class WeChatMpDynamicConfigInRedisStorage implements WeChatMpDynamicConfi
      * @return jsapi_ticket 值
      */
     public String getJsapiTicketFromWxMpService() {
-        String responseContent = restTemplate.getForObject(getJsapiTicketUrl(), String.class);
+        String accessToken = getAccessToken(false);
+        String url = getJsapiTicketUrl() + "access_token=" + accessToken;
+        String responseContent = restTemplate.getForObject(url, String.class);
         JSONObject tmpJsonObject = JSONObject.parseObject(responseContent);
         String jsapiTicket = tmpJsonObject.getString("ticket");
         int expiresInSeconds = tmpJsonObject.getIntValue("expires_in");
