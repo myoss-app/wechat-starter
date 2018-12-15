@@ -22,7 +22,7 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-parent</artifactId>
-    <version>1.0.4.RELEASE</version>
+    <version>1.0.5.RELEASE</version>
 </dependency>
 ```
 
@@ -30,7 +30,7 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-core</artifactId>
-    <version>1.0.4.RELEASE</version>
+    <version>1.0.5.RELEASE</version>
 </dependency>
 ```
 
@@ -38,6 +38,6 @@
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-mp</artifactId>
-    <version>1.0.4.RELEASE</version>
+    <version>1.0.5.RELEASE</version>
 </dependency>
 ```
