@@ -108,6 +108,15 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
         return weChatMpDynamicConfigStorage.isJsapiTicketExpired();
     }
 
+    /**
+     * 获取 jsapi_ticket 过期时间
+     *
+     * @return 过期时间，单位：秒
+     */
+    public long getJsapiTicketExpiresTime() {
+        return weChatMpDynamicConfigStorage.getJsapiTicketExpiresTime();
+    }
+
     @Override
     public void expireJsapiTicket() {
         weChatMpDynamicConfigStorage.expireJsapiTicket();
