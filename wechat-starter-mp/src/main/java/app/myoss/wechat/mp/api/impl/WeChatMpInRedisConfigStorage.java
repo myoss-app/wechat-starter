@@ -129,7 +129,7 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public String getCardApiTicket() {
-        return null;
+        return weChatMpDynamicConfigStorage.getCardApiTicket();
     }
 
     @Override
@@ -139,17 +139,17 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public boolean isCardApiTicketExpired() {
-        return false;
+        return weChatMpDynamicConfigStorage.isCardApiTicketExpired();
     }
 
     @Override
     public void expireCardApiTicket() {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.expireCardApiTicket();
     }
 
     @Override
     public void updateCardApiTicket(String cardApiTicket, int expiresInSeconds) {
-        throw new UnsupportedOperationException();
+        weChatMpDynamicConfigStorage.updateCardApiTicket(cardApiTicket, expiresInSeconds);
     }
 
     @Override

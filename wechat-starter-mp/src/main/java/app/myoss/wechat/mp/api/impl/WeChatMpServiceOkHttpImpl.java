@@ -17,7 +17,23 @@
 
 package app.myoss.wechat.mp.api.impl;
 
+import java.io.IOException;
+import java.util.concurrent.locks.Lock;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import me.chanjar.weixin.common.WxType;
+import me.chanjar.weixin.common.bean.WxAccessToken;
+import me.chanjar.weixin.common.error.WxError;
+import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.common.util.http.SimpleGetRequestExecutor;
+import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceOkHttpImpl;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * 微信公众号API的实现类，使用 OkHttp3 发起请求
@@ -26,25 +42,73 @@ import me.chanjar.weixin.mp.api.impl.WxMpServiceOkHttpImpl;
  * @since 2018年8月28日 下午4:39:26
  */
 public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
+    private static final JsonParser JSON_PARSER = new JsonParser();
+
     /**
-     * 获取 access_token 值，使用外部的定时任务去刷新 access_token 值
+     * 获取 access_token 值
      *
-     * @param forceRefresh 这里不会去强制刷新，使用定时任务统一去触发
+     * @param forceRefresh 是否强制刷新
      * @return access_token 值
      */
     @Override
-    public String getAccessToken(boolean forceRefresh) {
-        return getWxMpConfigStorage().getAccessToken();
+    public String getAccessToken(boolean forceRefresh) throws WxErrorException {
+        this.log.debug("WeChatMpServiceOkHttpImpl getAccessToken is running");
+        WxMpConfigStorage wxMpConfigStorage = getWxMpConfigStorage();
+        if (!forceRefresh && !wxMpConfigStorage.isAccessTokenExpired()) {
+            return wxMpConfigStorage.getAccessToken();
+        }
+
+        Lock lock = wxMpConfigStorage.getAccessTokenLock();
+        try {
+            lock.lock();
+            String url = String.format(WxMpService.GET_ACCESS_TOKEN_URL, this.getWxMpConfigStorage().getAppId(),
+                    this.getWxMpConfigStorage().getSecret());
+            Request request = new Request.Builder().url(url).get().build();
+            Response response = getRequestHttpClient().newCall(request).execute();
+            assert response.body() != null;
+            String resultContent = response.body().string();
+            WxError error = WxError.fromJson(resultContent, WxType.MP);
+            if (error.getErrorCode() != 0) {
+                throw new WxErrorException(error);
+            }
+            WxAccessToken accessToken = WxAccessToken.fromJson(resultContent);
+            wxMpConfigStorage.updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
+            return accessToken.getAccessToken();
+        } catch (IOException e) {
+            this.log.error(e.getMessage(), e);
+        } finally {
+            lock.unlock();
+        }
+        return null;
     }
 
     /**
-     * 获取 jsapi_ticket 值，使用外部的定时任务去刷新 jsapi_ticket 值
+     * 获取 jsapi_ticket 值
      *
-     * @param forceRefresh 这里不会去强制刷新，使用定时任务统一去触发
+     * @param forceRefresh 是否强制刷新
      * @return jsapi_ticket 值
      */
     @Override
-    public String getJsapiTicket(boolean forceRefresh) {
-        return getWxMpConfigStorage().getJsapiTicket();
+    public String getJsapiTicket(boolean forceRefresh) throws WxErrorException {
+        this.log.debug("WeChatMpServiceOkHttpImpl getJsapiTicket is running");
+        WxMpConfigStorage wxMpConfigStorage = getWxMpConfigStorage();
+        if (!forceRefresh && !wxMpConfigStorage.isJsapiTicketExpired()) {
+            return wxMpConfigStorage.getJsapiTicket();
+        }
+
+        Lock lock = wxMpConfigStorage.getJsapiTicketLock();
+        try {
+            lock.lock();
+            String responseContent = execute(SimpleGetRequestExecutor.create(this), WxMpService.GET_JSAPI_TICKET_URL,
+                    null);
+            JsonElement tmpJsonElement = JSON_PARSER.parse(responseContent);
+            JsonObject tmpJsonObject = tmpJsonElement.getAsJsonObject();
+            String jsapiTicket = tmpJsonObject.get("ticket").getAsString();
+            int expiresInSeconds = tmpJsonObject.get("expires_in").getAsInt();
+            wxMpConfigStorage.updateJsapiTicket(jsapiTicket, expiresInSeconds);
+            return jsapiTicket;
+        } finally {
+            lock.unlock();
+        }
     }
 }

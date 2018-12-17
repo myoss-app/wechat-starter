@@ -27,14 +27,6 @@ import java.util.concurrent.locks.Lock;
  */
 public interface WeChatMpDynamicConfigStorage {
     /**
-     * 获取 access_token 值，请使用定时任务调用此接口进行刷新 access_token 值
-     *
-     * @param forceRefresh 是否强制刷新
-     * @return access_token 值
-     */
-    String getAccessToken(boolean forceRefresh);
-
-    /**
      * 获取 access_token 值
      *
      * @return access_token 值
@@ -77,14 +69,6 @@ public interface WeChatMpDynamicConfigStorage {
     Lock getLock(String key);
 
     /**
-     * 获取 jsapi_ticket 值，请使用定时任务调用此接口进行刷新 jsapi_ticket 值
-     *
-     * @param forceRefresh 是否强制刷新
-     * @return access_token 值
-     */
-    String getJsapiTicket(boolean forceRefresh);
-
-    /**
      * 获取 jsapi_ticket 值
      *
      * @return jsapi_ticket 值
@@ -117,4 +101,38 @@ public interface WeChatMpDynamicConfigStorage {
      * @param expiresInSeconds 过期时间，单位：秒
      */
     void updateJsapiTicket(String jsapiTicket, int expiresInSeconds);
+
+    /**
+     * 获取 卡券api_ticket 值
+     *
+     * @return 卡券api_ticket 值
+     */
+    String getCardApiTicket();
+
+    /**
+     * 判断 卡券api_ticket 是否过期
+     *
+     * @return true: 过期; false: 未过期
+     */
+    boolean isCardApiTicketExpired();
+
+    /**
+     * 获取 卡券api_ticket 过期时间
+     *
+     * @return 过期时间，单位：秒
+     */
+    long getCardApiTicketExpiresTime();
+
+    /**
+     * 强制将 卡券api_ticket 过期掉
+     */
+    void expireCardApiTicket();
+
+    /**
+     * 更新 卡券api_ticket 值
+     *
+     * @param cardApiTicket 新的 卡券api_ticket 值
+     * @param expiresInSeconds 过期时间，单位：秒
+     */
+    void updateCardApiTicket(String cardApiTicket, int expiresInSeconds);
 }
