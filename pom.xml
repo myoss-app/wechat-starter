@@ -6,13 +6,13 @@
     <parent>
         <groupId>app.myoss.cloud</groupId>
         <artifactId>spring-boot-parent</artifactId>
-        <version>2.0.9.RELEASE</version>
+        <version>2.0.11.RELEASE</version>
     </parent>
 
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-parent</artifactId>
     <name>wechat-starter-parent</name>
-    <version>1.0.6.RELEASE</version>
+    <version>1.0.7.RELEASE</version>
     <packaging>pom</packaging>
 
     <description>myoss open source project, wechat-starter written in Java</description>
