@@ -49,6 +49,7 @@
     <modules>
         <module>wechat-starter-core</module>
         <module>wechat-starter-mp</module>
+        <module>wechat-starter-mini-app</module>
     </modules>
 
     <dependencies>

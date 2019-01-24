@@ -41,3 +41,11 @@
     <version>1.0.7.RELEASE</version>
 </dependency>
 ```
+
+```xml
+<dependency>
+    <groupId>app.myoss.wechat</groupId>
+    <artifactId>wechat-starter-mini-app</artifactId>
+    <version>1.0.7.RELEASE</version>
+</dependency>
+```
