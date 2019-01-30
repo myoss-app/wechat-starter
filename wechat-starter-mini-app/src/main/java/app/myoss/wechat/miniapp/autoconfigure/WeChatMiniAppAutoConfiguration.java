@@ -17,6 +17,8 @@
 
 package app.myoss.wechat.miniapp.autoconfigure;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -25,6 +27,8 @@ import org.springframework.context.annotation.Configuration;
  * @author Jerry.Chen
  * @since 2019年1月24日 上午10:46:07
  */
+@EnableConfigurationProperties(WeChatMiniAppProperties.class)
+@ConditionalOnProperty(prefix = "wechat.mini-app", value = "enabled", matchIfMissing = false)
 @Configuration
 public class WeChatMiniAppAutoConfiguration {
 }
