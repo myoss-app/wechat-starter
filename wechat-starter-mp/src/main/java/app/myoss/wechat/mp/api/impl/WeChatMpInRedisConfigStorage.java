@@ -31,6 +31,7 @@ import lombok.Setter;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.util.http.apache.ApacheHttpClientBuilder;
 import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.mp.enums.TicketType;
 
 /**
  * 基于 Redis 的微信配置 provider
@@ -91,65 +92,6 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
     @Override
     public void updateAccessToken(String accessToken, int expiresInSeconds) {
         weChatMpDynamicConfigStorage.updateAccessToken(accessToken, expiresInSeconds);
-    }
-
-    @Override
-    public String getJsapiTicket() {
-        return weChatMpDynamicConfigStorage.getJsapiTicket();
-    }
-
-    @Override
-    public Lock getJsapiTicketLock() {
-        return weChatMpDynamicConfigStorage.getLock("jsApiTicketLock");
-    }
-
-    @Override
-    public boolean isJsapiTicketExpired() {
-        return weChatMpDynamicConfigStorage.isJsapiTicketExpired();
-    }
-
-    /**
-     * 获取 jsapi_ticket 过期时间
-     *
-     * @return 过期时间，单位：秒
-     */
-    public long getJsapiTicketExpiresTime() {
-        return weChatMpDynamicConfigStorage.getJsapiTicketExpiresTime();
-    }
-
-    @Override
-    public void expireJsapiTicket() {
-        weChatMpDynamicConfigStorage.expireJsapiTicket();
-    }
-
-    @Override
-    public void updateJsapiTicket(String jsapiTicket, int expiresInSeconds) {
-        weChatMpDynamicConfigStorage.updateJsapiTicket(jsapiTicket, expiresInSeconds);
-    }
-
-    @Override
-    public String getCardApiTicket() {
-        return weChatMpDynamicConfigStorage.getCardApiTicket();
-    }
-
-    @Override
-    public Lock getCardApiTicketLock() {
-        return weChatMpDynamicConfigStorage.getLock("cardApiTicketLock");
-    }
-
-    @Override
-    public boolean isCardApiTicketExpired() {
-        return weChatMpDynamicConfigStorage.isCardApiTicketExpired();
-    }
-
-    @Override
-    public void expireCardApiTicket() {
-        weChatMpDynamicConfigStorage.expireCardApiTicket();
-    }
-
-    @Override
-    public void updateCardApiTicket(String cardApiTicket, int expiresInSeconds) {
-        weChatMpDynamicConfigStorage.updateCardApiTicket(cardApiTicket, expiresInSeconds);
     }
 
     @Override
@@ -220,5 +162,92 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
     @Override
     public boolean autoRefreshToken() {
         return true;
+    }
+
+    @Override
+    public String getTicket(TicketType type) {
+        switch (type) {
+            case JSAPI:
+                return weChatMpDynamicConfigStorage.getJsapiTicket();
+            case WX_CARD:
+                return weChatMpDynamicConfigStorage.getCardApiTicket();
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
+    }
+
+    @Override
+    public Lock getTicketLock(TicketType type) {
+        switch (type) {
+            case JSAPI:
+                return weChatMpDynamicConfigStorage.getLock("jsApiTicketLock");
+            case WX_CARD:
+                return weChatMpDynamicConfigStorage.getLock("cardApiTicketLock");
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
+    }
+
+    /**
+     * 获取 ticket 过期时间
+     *
+     * @param type ticket类型
+     * @return 过期时间，单位：秒
+     */
+    public long getTicketExpiresTime(TicketType type) {
+        switch (type) {
+            case JSAPI:
+                return weChatMpDynamicConfigStorage.getJsapiTicketExpiresTime();
+            case WX_CARD:
+                return weChatMpDynamicConfigStorage.getCardApiTicketExpiresTime();
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
+    }
+
+    @Override
+    public boolean isTicketExpired(TicketType type) {
+        switch (type) {
+            case JSAPI:
+                return weChatMpDynamicConfigStorage.isJsapiTicketExpired();
+            case WX_CARD:
+                return weChatMpDynamicConfigStorage.isCardApiTicketExpired();
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
+    }
+
+    @Override
+    public void expireTicket(TicketType type) {
+        switch (type) {
+            case JSAPI:
+                weChatMpDynamicConfigStorage.expireJsapiTicket();
+                break;
+            case WX_CARD:
+                weChatMpDynamicConfigStorage.expireCardApiTicket();
+                break;
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
+    }
+
+    @Override
+    public void updateTicket(TicketType type, String ticket, int expiresInSeconds) {
+        switch (type) {
+            case JSAPI:
+                weChatMpDynamicConfigStorage.updateJsapiTicket(ticket, expiresInSeconds);
+                break;
+            case WX_CARD:
+                weChatMpDynamicConfigStorage.updateCardApiTicket(ticket, expiresInSeconds);
+                break;
+            case SDK:
+            default:
+                throw new UnsupportedOperationException("ticketType = " + type.name());
+        }
     }
 }
