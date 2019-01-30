@@ -6,10 +6,10 @@
     <parent>
         <groupId>app.myoss.wechat</groupId>
         <artifactId>wechat-starter-parent</artifactId>
-        <version>1.0.7.RELEASE</version>
+        <version>1.1.0.RELEASE</version>
     </parent>
 
-    <artifactId>wechat-starter-miniapp</artifactId>
+    <artifactId>wechat-starter-mini-app</artifactId>
     <name>wechat-starter-mini-app</name>
 
     <description>myoss open source project, wechat-starter written in Java</description>
@@ -42,4 +42,22 @@
     <properties>
         <squareup-okhttp3.version>3.11.0</squareup-okhttp3.version>
     </properties>
+
+    <dependencies>
+        <!-- myoss cloud dependencies start -->
+        <dependency>
+            <groupId>app.myoss.cloud.boot</groupId>
+            <artifactId>myoss-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>app.myoss.cloud.boot</groupId>
+            <artifactId>myoss-starter-web</artifactId>
+        </dependency>
+        <!-- myoss cloud dependencies end -->
+
+        <dependency>
+            <groupId>com.github.binarywang</groupId>
+            <artifactId>weixin-java-miniapp</artifactId>
+        </dependency>
+    </dependencies>
 </project>
