@@ -19,11 +19,13 @@ package app.myoss.wechat.mp.autoconfigure;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
 
+import app.myoss.cloud.core.spring.context.SpringContextHolder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,6 +59,12 @@ public class WeChatMpProperties {
      * @return 微信公众号的属性配置
      */
     public WeChatMp getByCustomAppId(String customAppId) {
+        if (StringUtils.isBlank(customAppId)) {
+            return null;
+        }
+        if (config != null && customAppId.equals(config.getCustomAppId())) {
+            return config;
+        }
         for (WeChatMp weChatMp : configs.values()) {
             if (customAppId.equals(weChatMp.getCustomAppId())) {
                 return weChatMp;
@@ -72,6 +80,12 @@ public class WeChatMpProperties {
      * @return 微信公众号的属性配置
      */
     public WeChatMp getByOriginalId(String originalId) {
+        if (StringUtils.isBlank(originalId)) {
+            return null;
+        }
+        if (config != null && originalId.equals(config.getOriginalId())) {
+            return config;
+        }
         for (WeChatMp weChatMp : configs.values()) {
             if (originalId.equals(weChatMp.getAppId())) {
                 return weChatMp;
@@ -87,6 +101,12 @@ public class WeChatMpProperties {
      * @return 微信公众号的属性配置
      */
     public WeChatMp getByAppId(String appId) {
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
+        if (config != null && appId.equals(config.getAppId())) {
+            return config;
+        }
         for (WeChatMp weChatMp : configs.values()) {
             if (appId.equals(weChatMp.getAppId())) {
                 return weChatMp;
@@ -137,6 +157,18 @@ public class WeChatMpProperties {
          */
         @JSONField(serialize = false)
         private String encodingAesKey;
+
+        /**
+         * 获取微信小程序的 Spring Bean 对象，根据 customAppId
+         *
+         * @param clazz type the bean must match
+         * @param <T> bean class type
+         * @return bean instance
+         */
+        public <T> T getSpringBeanByCustomAppId(Class<T> clazz) {
+            String name = customAppId + clazz.getSimpleName();
+            return SpringContextHolder.getBean(name, clazz);
+        }
 
         @Override
         public String toString() {
