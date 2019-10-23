@@ -50,6 +50,7 @@
         <module>wechat-starter-core</module>
         <module>wechat-starter-mp</module>
         <module>wechat-starter-mini-app</module>
+        <module>wechat-starter-pay</module>
     </modules>
 
     <dependencies>
