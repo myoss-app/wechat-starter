@@ -26,13 +26,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Joiner;
+import com.google.gson.JsonParser;
 
 import cn.binarywang.wx.miniapp.api.WxMaAnalysisService;
 import cn.binarywang.wx.miniapp.api.WxMaCodeService;
 import cn.binarywang.wx.miniapp.api.WxMaJsapiService;
 import cn.binarywang.wx.miniapp.api.WxMaMediaService;
 import cn.binarywang.wx.miniapp.api.WxMaMsgService;
+import cn.binarywang.wx.miniapp.api.WxMaPluginService;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaRunService;
 import cn.binarywang.wx.miniapp.api.WxMaSecCheckService;
@@ -46,6 +50,7 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaCodeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaJsapiServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMediaServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMsgServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaPluginServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaQrcodeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaRunServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSecCheckServiceImpl;
@@ -56,6 +61,7 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaUserServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.WxType;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -82,25 +88,28 @@ import okhttp3.Route;
  */
 @Slf4j
 public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<OkHttpClient, OkHttpProxyInfo> {
-    private OkHttpClient        httpClient;
-    private OkHttpProxyInfo     httpProxy;
-    private WxMaConfig          wxMaConfig;
+    private static final JsonParser JSON_PARSER      = new JsonParser();
 
-    private WxMaMsgService      kefuService      = new WxMaMsgServiceImpl(this);
-    private WxMaMediaService    materialService  = new WxMaMediaServiceImpl(this);
-    private WxMaUserService     userService      = new WxMaUserServiceImpl(this);
-    private WxMaQrcodeService   qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private WxMaTemplateService templateService  = new WxMaTemplateServiceImpl(this);
-    private WxMaAnalysisService analysisService  = new WxMaAnalysisServiceImpl(this);
-    private WxMaCodeService     codeService      = new WxMaCodeServiceImpl(this);
-    private WxMaSettingService  settingService   = new WxMaSettingServiceImpl(this);
-    private WxMaJsapiService    jsapiService     = new WxMaJsapiServiceImpl(this);
-    private WxMaShareService    shareService     = new WxMaShareServiceImpl(this);
-    private WxMaRunService      runService       = new WxMaRunServiceImpl(this);
-    private WxMaSecCheckService secCheckService  = new WxMaSecCheckServiceImpl(this);
+    private OkHttpClient            httpClient;
+    private OkHttpProxyInfo         httpProxy;
+    private WxMaConfig              wxMaConfig;
 
-    private int                 retrySleepMillis = 1000;
-    private int                 maxRetryTimes    = 5;
+    private WxMaMsgService          kefuService      = new WxMaMsgServiceImpl(this);
+    private WxMaMediaService        materialService  = new WxMaMediaServiceImpl(this);
+    private WxMaUserService         userService      = new WxMaUserServiceImpl(this);
+    private WxMaQrcodeService       qrCodeService    = new WxMaQrcodeServiceImpl(this);
+    private WxMaTemplateService     templateService  = new WxMaTemplateServiceImpl(this);
+    private WxMaAnalysisService     analysisService  = new WxMaAnalysisServiceImpl(this);
+    private WxMaCodeService         codeService      = new WxMaCodeServiceImpl(this);
+    private WxMaSettingService      settingService   = new WxMaSettingServiceImpl(this);
+    private WxMaJsapiService        jsapiService     = new WxMaJsapiServiceImpl(this);
+    private WxMaShareService        shareService     = new WxMaShareServiceImpl(this);
+    private WxMaRunService          runService       = new WxMaRunServiceImpl(this);
+    private WxMaSecCheckService     secCheckService  = new WxMaSecCheckServiceImpl(this);
+    private WxMaPluginService       pluginService    = new WxMaPluginServiceImpl(this);
+
+    private int                     retrySleepMillis = 1000;
+    private int                     maxRetryTimes    = 5;
 
     @Override
     public OkHttpClient getRequestHttpClient() {
@@ -177,6 +186,34 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
         }
 
         return this.getWxMaConfig().getAccessToken();
+    }
+
+    @Override
+    public String getPaidUnionId(String openid, String transactionId, String mchId, String outTradeNo)
+            throws WxErrorException {
+        Map<String, String> params = new HashMap<>(8);
+        params.put("openid", openid);
+
+        if (StringUtils.isNotEmpty(transactionId)) {
+            params.put("transaction_id", transactionId);
+        }
+
+        if (StringUtils.isNotEmpty(mchId)) {
+            params.put("mch_id", mchId);
+        }
+
+        if (StringUtils.isNotEmpty(outTradeNo)) {
+            params.put("out_trade_no", outTradeNo);
+        }
+
+        String responseContent = this.get(GET_PAID_UNION_ID_URL,
+                Joiner.on("&").withKeyValueSeparator("=").join(params));
+        WxError error = WxError.fromJson(responseContent, WxType.MiniApp);
+        if (error.getErrorCode() != 0) {
+            throw new WxErrorException(error);
+        }
+
+        return JSON_PARSER.parse(responseContent).getAsJsonObject().get("unionid").getAsString();
     }
 
     @Override
@@ -371,5 +408,10 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     @Override
     public WxMaSecCheckService getSecCheckService() {
         return this.secCheckService;
+    }
+
+    @Override
+    public WxMaPluginService getPluginService() {
+        return this.pluginService;
     }
 }

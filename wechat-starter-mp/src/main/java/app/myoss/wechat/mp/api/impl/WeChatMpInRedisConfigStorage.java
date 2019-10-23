@@ -30,7 +30,8 @@ import lombok.Getter;
 import lombok.Setter;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.util.http.apache.ApacheHttpClientBuilder;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
+import me.chanjar.weixin.mp.bean.WxMpHostConfig;
+import me.chanjar.weixin.mp.config.WxMpConfigStorage;
 import me.chanjar.weixin.mp.enums.TicketType;
 
 /**
@@ -249,5 +250,10 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
             default:
                 throw new UnsupportedOperationException("ticketType = " + type.name());
         }
+    }
+
+    @Override
+    public WxMpHostConfig getHostConfig() {
+        return null;
     }
 }

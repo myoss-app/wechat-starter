@@ -23,15 +23,16 @@ import java.util.concurrent.locks.Lock;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.WxType;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.util.http.SimpleGetRequestExecutor;
-import me.chanjar.weixin.mp.api.WxMpConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceOkHttpImpl;
+import me.chanjar.weixin.mp.config.WxMpConfigStorage;
 import me.chanjar.weixin.mp.enums.TicketType;
+import me.chanjar.weixin.mp.enums.WxMpApiUrl;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -41,6 +42,7 @@ import okhttp3.Response;
  * @author Jerry.Chen
  * @since 2018年8月28日 下午4:39:26
  */
+@Slf4j
 public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
     private static final JsonParser JSON_PARSER = new JsonParser();
 
@@ -52,7 +54,7 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
      */
     @Override
     public String getAccessToken(boolean forceRefresh) throws WxErrorException {
-        this.log.debug("WeChatMpServiceOkHttpImpl getAccessToken is running");
+        log.debug("WeChatMpServiceOkHttpImpl getAccessToken is running");
         WxMpConfigStorage wxMpConfigStorage = getWxMpConfigStorage();
         if (!forceRefresh && !wxMpConfigStorage.isAccessTokenExpired()) {
             return wxMpConfigStorage.getAccessToken();
@@ -61,8 +63,8 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
         Lock lock = wxMpConfigStorage.getAccessTokenLock();
         try {
             lock.lock();
-            String url = String.format(WxMpService.GET_ACCESS_TOKEN_URL, this.getWxMpConfigStorage().getAppId(),
-                    this.getWxMpConfigStorage().getSecret());
+            String url = String.format(WxMpApiUrl.Other.GET_ACCESS_TOKEN_URL.getUrl(wxMpConfigStorage),
+                    this.getWxMpConfigStorage().getAppId(), this.getWxMpConfigStorage().getSecret());
             Request request = new Request.Builder().url(url).get().build();
             Response response = getRequestHttpClient().newCall(request).execute();
             assert response.body() != null;
@@ -75,7 +77,7 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
             wxMpConfigStorage.updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
             return accessToken.getAccessToken();
         } catch (IOException e) {
-            this.log.error(e.getMessage(), e);
+            log.error(e.getMessage(), e);
         } finally {
             lock.unlock();
         }
@@ -100,7 +102,7 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
         try {
             lock.lock();
             String responseContent = execute(SimpleGetRequestExecutor.create(this),
-                    WxMpService.GET_TICKET_URL + type.getCode(), null);
+                    WxMpApiUrl.Other.GET_TICKET_URL.getUrl(wxMpConfigStorage) + type.getCode(), null);
             JsonObject tmpJsonObject = JSON_PARSER.parse(responseContent).getAsJsonObject();
             String ticket = tmpJsonObject.get("ticket").getAsString();
             int expiresInSeconds = tmpJsonObject.get("expires_in").getAsInt();

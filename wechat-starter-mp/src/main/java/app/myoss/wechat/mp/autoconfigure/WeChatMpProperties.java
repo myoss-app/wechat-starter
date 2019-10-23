@@ -159,7 +159,7 @@ public class WeChatMpProperties {
         private String encodingAesKey;
 
         /**
-         * 获取微信小程序的 Spring Bean 对象，根据 customAppId
+         * 获取微信公众号的 Spring Bean 对象，根据 customAppId
          *
          * @param clazz type the bean must match
          * @param <T> bean class type
