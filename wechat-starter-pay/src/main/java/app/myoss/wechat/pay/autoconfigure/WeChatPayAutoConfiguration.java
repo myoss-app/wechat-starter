@@ -57,6 +57,9 @@ public class WeChatPayAutoConfiguration {
         payConfig.setMchKey(config.getMchKey());
         payConfig.setNotifyUrl(config.getNotifyUrl());
         payConfig.setTradeType(config.getTradeType());
+        payConfig.setKeyPath(config.getKeyPath());
+        payConfig.setSubMchId(config.getSubMchId());
+        payConfig.setSubAppId(config.getSubAppId());
         return wxPayService;
     }
 }

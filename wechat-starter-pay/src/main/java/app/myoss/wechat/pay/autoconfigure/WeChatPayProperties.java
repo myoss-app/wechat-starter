@@ -185,6 +185,14 @@ public class WeChatPayProperties {
          * </pre>
          */
         private String tradeType;
+        /**
+         * 微信支付，证书路径
+         */
+        private String keyPath;
+        /**
+         * 服务商模式下的子场景
+         */
+        private String subAppId;
 
         /**
          * 获取微信支付的 Spring Bean 对象，根据 customAppId
