@@ -13,7 +13,7 @@
 - [maven][1]
 - [the latest JAR][2]
 
-[1]: http://repo1.maven.org/maven2/app/myoss/wechat/wechat-starter-parent/  
+[1]: https://repo1.maven.org/maven2/app/myoss/wechat/wechat-starter-parent/  
 [2]: https://search.maven.org/remote_content?g=app.myoss.wechat&a=wechat-starter-parent&v=LATEST
 
 ## Maven
