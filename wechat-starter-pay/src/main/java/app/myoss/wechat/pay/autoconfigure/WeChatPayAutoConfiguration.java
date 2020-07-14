@@ -17,6 +17,7 @@
 
 package app.myoss.wechat.pay.autoconfigure;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,10 +25,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.github.binarywang.wxpay.config.WxPayConfig;
+import com.github.binarywang.wxpay.exception.WxPayException;
 import com.github.binarywang.wxpay.service.WxPayService;
 import com.github.binarywang.wxpay.service.impl.WeChatPayServiceOkHttpImpl;
 
 import app.myoss.wechat.pay.autoconfigure.WeChatPayProperties.WeChatMp;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 微信支付自动配置
@@ -35,6 +38,7 @@ import app.myoss.wechat.pay.autoconfigure.WeChatPayProperties.WeChatMp;
  * @author Jerry.Chen
  * @since 2019年10月14日 下午12:47:07
  */
+@Slf4j
 @EnableConfigurationProperties(WeChatPayProperties.class)
 @ConditionalOnProperty(prefix = "wechat.pay", value = "enabled", matchIfMissing = false)
 @Configuration
@@ -60,6 +64,13 @@ public class WeChatPayAutoConfiguration {
         payConfig.setKeyPath(config.getKeyPath());
         payConfig.setSubMchId(config.getSubMchId());
         payConfig.setSubAppId(config.getSubAppId());
+        if (StringUtils.isNotBlank(config.getKeyPath())) {
+            try {
+                payConfig.setSslContext(payConfig.initSSLContext());
+            } catch (WxPayException e) {
+                log.info("获取SslContext异常:{}", e);
+            }
+        }
         return wxPayService;
     }
 }
