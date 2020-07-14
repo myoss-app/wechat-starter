@@ -18,9 +18,12 @@
 package com.github.binarywang.wxpay.service.impl;
 
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -78,7 +81,29 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
                 return response.request().newBuilder().header("Authorization", credential).build();
             });
         }
-        httpClient = clientBuilder.build();
+
+        if (null != wxPayConfig.getSslContext()) {
+            httpClient = clientBuilder
+                    .sslSocketFactory(wxPayConfig.getSslContext().getSocketFactory(), new X509TrustManager() {
+                        @Override
+                        public void checkClientTrusted(X509Certificate[] chain, String authType)
+                                throws CertificateException {
+                        }
+
+                        @Override
+                        public void checkServerTrusted(X509Certificate[] chain, String authType)
+                                throws CertificateException {
+                        }
+
+                        @Override
+                        public X509Certificate[] getAcceptedIssuers() {
+                            return new X509Certificate[0];
+                        }
+                    })
+                    .build();
+        } else {
+            httpClient = clientBuilder.build();
+        }
     }
 
     @Override
