@@ -22,10 +22,14 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.google.gson.annotations.Expose;
 
+import app.myoss.cloud.core.lang.json.JsonApi;
 import app.myoss.cloud.core.spring.context.SpringContextHolder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +39,7 @@ import lombok.Setter;
  * @author Jerry.Chen
  * @since 2018年8月27日 下午6:20:54
  */
+@EqualsAndHashCode
 @Getter
 @Setter
 @ConfigurationProperties(prefix = "wechat.mp")
@@ -117,12 +122,13 @@ public class WeChatMpProperties {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return JsonApi.toJson(this);
     }
 
     /**
      * 微信公众号的属性配置
      */
+    @EqualsAndHashCode
     @Getter
     @Setter
     public static class WeChatMp {
@@ -145,16 +151,22 @@ public class WeChatMpProperties {
         /**
          * 开发者密码
          */
+        @JsonProperty(access = Access.WRITE_ONLY)
+        @Expose(serialize = false)
         @JSONField(serialize = false)
         private String appSecret;
         /**
          * 服务器配置，令牌
          */
+        @JsonProperty(access = Access.WRITE_ONLY)
+        @Expose(serialize = false)
         @JSONField(serialize = false)
         private String token;
         /**
          * 服务器配置，EncodingAESKey
          */
+        @JsonProperty(access = Access.WRITE_ONLY)
+        @Expose(serialize = false)
         @JSONField(serialize = false)
         private String encodingAesKey;
 
@@ -172,7 +184,7 @@ public class WeChatMpProperties {
 
         @Override
         public String toString() {
-            return JSON.toJSONString(this);
+            return JsonApi.toJson(this);
         }
     }
 }
