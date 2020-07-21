@@ -44,8 +44,6 @@ import okhttp3.Response;
  */
 @Slf4j
 public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
-    private static final JsonParser JSON_PARSER = new JsonParser();
-
     /**
      * 获取 access_token 值
      *
@@ -103,7 +101,7 @@ public class WeChatMpServiceOkHttpImpl extends WxMpServiceOkHttpImpl {
             lock.lock();
             String responseContent = execute(SimpleGetRequestExecutor.create(this),
                     WxMpApiUrl.Other.GET_TICKET_URL.getUrl(wxMpConfigStorage) + type.getCode(), null);
-            JsonObject tmpJsonObject = JSON_PARSER.parse(responseContent).getAsJsonObject();
+            JsonObject tmpJsonObject = JsonParser.parseString(responseContent).getAsJsonObject();
             String ticket = tmpJsonObject.get("ticket").getAsString();
             int expiresInSeconds = tmpJsonObject.get("expires_in").getAsInt();
             wxMpConfigStorage.updateTicket(type, ticket, expiresInSeconds);

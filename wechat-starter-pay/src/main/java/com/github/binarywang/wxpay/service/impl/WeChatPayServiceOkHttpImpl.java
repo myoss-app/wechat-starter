@@ -109,7 +109,7 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
     @Override
     public byte[] postForBytes(String url, String requestStr, boolean useKey) throws WxPayException {
         try {
-            RequestBody requestBody = RequestBody.create(requestStr, MediaType.get("application/xml"));
+            RequestBody requestBody = RequestBody.create(MediaType.get("application/xml"), requestStr);
             Request request = new Request.Builder().url(url).post(requestBody).build();
             Response response = getRequestHttpClient().newCall(request).execute();
             byte[] responseBytes = response.body().bytes();
@@ -129,7 +129,7 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
     @Override
     public String post(String url, String requestStr, boolean useKey) throws WxPayException {
         try {
-            RequestBody requestBody = RequestBody.create(requestStr, MediaType.get("application/xml"));
+            RequestBody requestBody = RequestBody.create(MediaType.get("application/xml"), requestStr);
             Request request = new Request.Builder().url(url).post(requestBody).build();
             Response response = getRequestHttpClient().newCall(request).execute();
             String responseString = response.body().string();

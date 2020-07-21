@@ -88,28 +88,26 @@ import okhttp3.Route;
  */
 @Slf4j
 public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<OkHttpClient, OkHttpProxyInfo> {
-    private static final JsonParser JSON_PARSER      = new JsonParser();
+    private OkHttpClient        httpClient;
+    private OkHttpProxyInfo     httpProxy;
+    private WxMaConfig          wxMaConfig;
 
-    private OkHttpClient            httpClient;
-    private OkHttpProxyInfo         httpProxy;
-    private WxMaConfig              wxMaConfig;
+    private WxMaMsgService      kefuService      = new WxMaMsgServiceImpl(this);
+    private WxMaMediaService    materialService  = new WxMaMediaServiceImpl(this);
+    private WxMaUserService     userService      = new WxMaUserServiceImpl(this);
+    private WxMaQrcodeService   qrCodeService    = new WxMaQrcodeServiceImpl(this);
+    private WxMaTemplateService templateService  = new WxMaTemplateServiceImpl(this);
+    private WxMaAnalysisService analysisService  = new WxMaAnalysisServiceImpl(this);
+    private WxMaCodeService     codeService      = new WxMaCodeServiceImpl(this);
+    private WxMaSettingService  settingService   = new WxMaSettingServiceImpl(this);
+    private WxMaJsapiService    jsapiService     = new WxMaJsapiServiceImpl(this);
+    private WxMaShareService    shareService     = new WxMaShareServiceImpl(this);
+    private WxMaRunService      runService       = new WxMaRunServiceImpl(this);
+    private WxMaSecCheckService secCheckService  = new WxMaSecCheckServiceImpl(this);
+    private WxMaPluginService   pluginService    = new WxMaPluginServiceImpl(this);
 
-    private WxMaMsgService          kefuService      = new WxMaMsgServiceImpl(this);
-    private WxMaMediaService        materialService  = new WxMaMediaServiceImpl(this);
-    private WxMaUserService         userService      = new WxMaUserServiceImpl(this);
-    private WxMaQrcodeService       qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private WxMaTemplateService     templateService  = new WxMaTemplateServiceImpl(this);
-    private WxMaAnalysisService     analysisService  = new WxMaAnalysisServiceImpl(this);
-    private WxMaCodeService         codeService      = new WxMaCodeServiceImpl(this);
-    private WxMaSettingService      settingService   = new WxMaSettingServiceImpl(this);
-    private WxMaJsapiService        jsapiService     = new WxMaJsapiServiceImpl(this);
-    private WxMaShareService        shareService     = new WxMaShareServiceImpl(this);
-    private WxMaRunService          runService       = new WxMaRunServiceImpl(this);
-    private WxMaSecCheckService     secCheckService  = new WxMaSecCheckServiceImpl(this);
-    private WxMaPluginService       pluginService    = new WxMaPluginServiceImpl(this);
-
-    private int                     retrySleepMillis = 1000;
-    private int                     maxRetryTimes    = 5;
+    private int                 retrySleepMillis = 1000;
+    private int                 maxRetryTimes    = 5;
 
     @Override
     public OkHttpClient getRequestHttpClient() {
@@ -213,7 +211,7 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
             throw new WxErrorException(error);
         }
 
-        return JSON_PARSER.parse(responseContent).getAsJsonObject().get("unionid").getAsString();
+        return JsonParser.parseString(responseContent).getAsJsonObject().get("unionid").getAsString();
     }
 
     @Override
