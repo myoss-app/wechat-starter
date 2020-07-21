@@ -29,11 +29,16 @@ import java.util.concurrent.locks.Lock;
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import cn.binarywang.wx.miniapp.api.WxMaAnalysisService;
+import cn.binarywang.wx.miniapp.api.WxMaCloudService;
 import cn.binarywang.wx.miniapp.api.WxMaCodeService;
+import cn.binarywang.wx.miniapp.api.WxMaExpressService;
 import cn.binarywang.wx.miniapp.api.WxMaJsapiService;
+import cn.binarywang.wx.miniapp.api.WxMaLiveService;
 import cn.binarywang.wx.miniapp.api.WxMaMediaService;
 import cn.binarywang.wx.miniapp.api.WxMaMsgService;
 import cn.binarywang.wx.miniapp.api.WxMaPluginService;
@@ -43,11 +48,15 @@ import cn.binarywang.wx.miniapp.api.WxMaSecCheckService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSettingService;
 import cn.binarywang.wx.miniapp.api.WxMaShareService;
+import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.api.WxMaTemplateService;
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaAnalysisServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaCloudServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaCodeServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaExpressServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaJsapiServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaLiveServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMediaServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMsgServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaPluginServiceImpl;
@@ -56,6 +65,7 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaRunServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSecCheckServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSettingServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaShareServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaSubscribeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaTemplateServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaUserServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
@@ -73,6 +83,7 @@ import me.chanjar.weixin.common.util.http.RequestHttp;
 import me.chanjar.weixin.common.util.http.SimpleGetRequestExecutor;
 import me.chanjar.weixin.common.util.http.SimplePostRequestExecutor;
 import me.chanjar.weixin.common.util.http.okhttp.OkHttpProxyInfo;
+import me.chanjar.weixin.common.util.json.WxGsonBuilder;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
@@ -88,26 +99,30 @@ import okhttp3.Route;
  */
 @Slf4j
 public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<OkHttpClient, OkHttpProxyInfo> {
-    private OkHttpClient        httpClient;
-    private OkHttpProxyInfo     httpProxy;
-    private WxMaConfig          wxMaConfig;
+    private OkHttpClient               httpClient;
+    private OkHttpProxyInfo            httpProxy;
+    private WxMaConfig                 wxMaConfig;
 
-    private WxMaMsgService      kefuService      = new WxMaMsgServiceImpl(this);
-    private WxMaMediaService    materialService  = new WxMaMediaServiceImpl(this);
-    private WxMaUserService     userService      = new WxMaUserServiceImpl(this);
-    private WxMaQrcodeService   qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private WxMaTemplateService templateService  = new WxMaTemplateServiceImpl(this);
-    private WxMaAnalysisService analysisService  = new WxMaAnalysisServiceImpl(this);
-    private WxMaCodeService     codeService      = new WxMaCodeServiceImpl(this);
-    private WxMaSettingService  settingService   = new WxMaSettingServiceImpl(this);
-    private WxMaJsapiService    jsapiService     = new WxMaJsapiServiceImpl(this);
-    private WxMaShareService    shareService     = new WxMaShareServiceImpl(this);
-    private WxMaRunService      runService       = new WxMaRunServiceImpl(this);
-    private WxMaSecCheckService secCheckService  = new WxMaSecCheckServiceImpl(this);
-    private WxMaPluginService   pluginService    = new WxMaPluginServiceImpl(this);
+    private final WxMaMsgService       kefuService      = new WxMaMsgServiceImpl(this);
+    private final WxMaMediaService     materialService  = new WxMaMediaServiceImpl(this);
+    private final WxMaUserService      userService      = new WxMaUserServiceImpl(this);
+    private final WxMaQrcodeService    qrCodeService    = new WxMaQrcodeServiceImpl(this);
+    private final WxMaTemplateService  templateService  = new WxMaTemplateServiceImpl(this);
+    private final WxMaAnalysisService  analysisService  = new WxMaAnalysisServiceImpl(this);
+    private final WxMaCodeService      codeService      = new WxMaCodeServiceImpl(this);
+    private final WxMaSettingService   settingService   = new WxMaSettingServiceImpl(this);
+    private final WxMaJsapiService     jsapiService     = new WxMaJsapiServiceImpl(this);
+    private final WxMaShareService     shareService     = new WxMaShareServiceImpl(this);
+    private final WxMaRunService       runService       = new WxMaRunServiceImpl(this);
+    private final WxMaSecCheckService  secCheckService  = new WxMaSecCheckServiceImpl(this);
+    private final WxMaPluginService    pluginService    = new WxMaPluginServiceImpl(this);
+    private final WxMaExpressService   expressService   = new WxMaExpressServiceImpl(this);
+    private final WxMaSubscribeService subscribeService = new WxMaSubscribeServiceImpl(this);
+    private final WxMaCloudService     cloudService     = new WxMaCloudServiceImpl(this);
+    private final WxMaLiveService      liveService      = new WxMaLiveServiceImpl(this);
 
-    private int                 retrySleepMillis = 1000;
-    private int                 maxRetryTimes    = 5;
+    private int                        retrySleepMillis = 1000;
+    private int                        maxRetryTimes    = 5;
 
     @Override
     public OkHttpClient getRequestHttpClient() {
@@ -228,6 +243,17 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     }
 
     @Override
+    public void setDynamicData(int lifespan, String type, int scene, String data) throws WxErrorException {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("lifespan", lifespan);
+        jsonObject.addProperty("query", WxGsonBuilder.create().toJson(ImmutableMap.of("type", type)));
+        jsonObject.addProperty("data", data);
+        jsonObject.addProperty("scene", scene);
+
+        this.post(SET_DYNAMIC_DATA_URL, jsonObject.toString());
+    }
+
+    @Override
     public boolean checkSignature(String timestamp, String nonce, String signature) {
         try {
             return SHA1.gen(this.getWxMaConfig().getToken(), timestamp, nonce).equals(signature);
@@ -250,6 +276,11 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     @Override
     public String post(String url, String postData) throws WxErrorException {
         return execute(SimplePostRequestExecutor.create(this), url, postData);
+    }
+
+    @Override
+    public String post(String url, Object obj) throws WxErrorException {
+        return this.execute(SimplePostRequestExecutor.create(this), url, WxGsonBuilder.create().toJson(obj));
     }
 
     /**
@@ -299,7 +330,7 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
         String uriWithAccessToken = uri + (uri.contains("?") ? "&" : "?") + "access_token=" + accessToken;
 
         try {
-            T result = executor.execute(uriWithAccessToken, data);
+            T result = executor.execute(uriWithAccessToken, data, WxType.MiniApp);
             log.debug("\n【请求地址】: {}\n【请求参数】：{}\n【响应数据】：{}", uriWithAccessToken, dataForLog, result);
             return result;
         } catch (WxErrorException e) {
@@ -411,5 +442,25 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     @Override
     public WxMaPluginService getPluginService() {
         return this.pluginService;
+    }
+
+    @Override
+    public WxMaSubscribeService getSubscribeService() {
+        return this.subscribeService;
+    }
+
+    @Override
+    public WxMaExpressService getExpressService() {
+        return this.expressService;
+    }
+
+    @Override
+    public WxMaCloudService getCloudService() {
+        return this.cloudService;
+    }
+
+    @Override
+    public WxMaLiveService getLiveService() {
+        return this.liveService;
     }
 }

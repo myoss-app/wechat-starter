@@ -17,6 +17,7 @@
 
 package com.github.binarywang.wxpay.service.impl;
 
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -30,6 +31,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.github.binarywang.wxpay.bean.WxPayApiData;
 import com.github.binarywang.wxpay.config.WxPayConfig;
 import com.github.binarywang.wxpay.exception.WxPayException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.util.http.okhttp.OkHttpProxyInfo;
@@ -145,6 +148,64 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
         } catch (Exception e) {
             log.error("\n【请求地址】：{}\n【请求数据】：{}\n【异常信息】：{}", url, requestStr, e.getMessage());
             wxApiData.set(new WxPayApiData(url, requestStr, null, e.getMessage()));
+            throw new WxPayException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String postV3(String url, String requestStr) throws WxPayException {
+        try {
+            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), requestStr);
+            Request request = new Request.Builder().url(url)
+                    .addHeader("Accept", "application/json")
+                    .post(requestBody)
+                    .build();
+            Response response = getRequestHttpClient().newCall(request).execute();
+            String responseString = response.body().string();
+            if (StringUtils.isBlank(responseString)) {
+                throw new WxPayException("响应信息为空");
+            }
+            // v3已经改为通过状态码判断200 204 成功
+            int statusCode = response.code();
+            if (200 == statusCode || 204 == statusCode) {
+                log.info("\n【请求地址】：{}\n【请求数据】：{}\n【响应数据】：{}", url, requestStr, responseString);
+                return responseString;
+            } else {
+                // 有错误提示信息返回
+                JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
+                throw new WxPayException(jsonObject.get("message").getAsString());
+            }
+        } catch (Exception e) {
+            log.error("\n【请求地址】：{}\n【请求数据】：{}\n【异常信息】：{}", url, requestStr, e.getMessage());
+            throw new WxPayException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String getV3(URI url) throws WxPayException {
+        try {
+            Request request = new Request.Builder().url(url.toURL())
+                    .addHeader("Accept", "application/json")
+                    .addHeader("Content-Type", "application/json")
+                    .get()
+                    .build();
+            Response response = getRequestHttpClient().newCall(request).execute();
+            String responseString = response.body().string();
+            if (StringUtils.isBlank(responseString)) {
+                throw new WxPayException("响应信息为空");
+            }
+            // v3已经改为通过状态码判断200 204 成功
+            int statusCode = response.code();
+            if (200 == statusCode || 204 == statusCode) {
+                log.info("\n【请求地址】：{}\n【响应数据】：{}", url, responseString);
+                return responseString;
+            } else {
+                // 有错误提示信息返回
+                JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
+                throw new WxPayException(jsonObject.get("message").getAsString());
+            }
+        } catch (Exception e) {
+            log.error("\n【请求地址】：{}\n【异常信息】：{}", url, e.getMessage());
             throw new WxPayException(e.getMessage(), e);
         }
     }
