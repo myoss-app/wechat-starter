@@ -31,8 +31,8 @@ import lombok.Setter;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.enums.TicketType;
 import me.chanjar.weixin.common.util.http.apache.ApacheHttpClientBuilder;
-import me.chanjar.weixin.mp.bean.WxMpHostConfig;
 import me.chanjar.weixin.mp.config.WxMpConfigStorage;
+import me.chanjar.weixin.mp.config.WxMpHostConfig;
 
 /**
  * 基于 Redis 的微信配置 provider
@@ -149,6 +149,16 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
     @Override
     public String getHttpProxyPassword() {
         return null;
+    }
+
+    @Override
+    public int getRetrySleepMillis() {
+        return 0;
+    }
+
+    @Override
+    public int getMaxRetryTimes() {
+        return 0;
     }
 
     @Override

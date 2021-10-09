@@ -35,44 +35,55 @@ import cn.binarywang.wx.miniapp.api.WxMaCodeService;
 import cn.binarywang.wx.miniapp.api.WxMaExpressService;
 import cn.binarywang.wx.miniapp.api.WxMaJsapiService;
 import cn.binarywang.wx.miniapp.api.WxMaLiveGoodsService;
+import cn.binarywang.wx.miniapp.api.WxMaLiveMemberService;
 import cn.binarywang.wx.miniapp.api.WxMaLiveService;
 import cn.binarywang.wx.miniapp.api.WxMaMediaService;
 import cn.binarywang.wx.miniapp.api.WxMaMsgService;
 import cn.binarywang.wx.miniapp.api.WxMaPluginService;
 import cn.binarywang.wx.miniapp.api.WxMaQrcodeService;
 import cn.binarywang.wx.miniapp.api.WxMaRunService;
+import cn.binarywang.wx.miniapp.api.WxMaSchemeService;
 import cn.binarywang.wx.miniapp.api.WxMaSecCheckService;
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSettingService;
 import cn.binarywang.wx.miniapp.api.WxMaShareService;
+import cn.binarywang.wx.miniapp.api.WxMaShopOrderService;
+import cn.binarywang.wx.miniapp.api.WxMaShopSpuService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaAnalysisServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaCloudServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaCodeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaExpressServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaImgProcServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaJsapiServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaLiveGoodsServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaLiveMemberServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaLiveServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMediaServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMsgServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaOcrServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaPluginServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaQrcodeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaRunServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaSchemeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSecCheckServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSettingServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaShareServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaShopOrderServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaShopSpuServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSubscribeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaUserServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.api.WxImgProcService;
-import me.chanjar.weixin.common.api.WxOcrService;
+import me.chanjar.weixin.common.bean.ToJson;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
+import me.chanjar.weixin.common.service.WxImgProcService;
+import me.chanjar.weixin.common.service.WxOcrService;
 import me.chanjar.weixin.common.util.DataUtils;
 import me.chanjar.weixin.common.util.crypto.SHA1;
 import me.chanjar.weixin.common.util.http.HttpType;
@@ -97,33 +108,39 @@ import okhttp3.Route;
  */
 @Slf4j
 public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<OkHttpClient, OkHttpProxyInfo> {
-    private OkHttpClient               httpClient;
-    private OkHttpProxyInfo            httpProxy;
-    private WxMaConfig                 wxMaConfig;
+    private OkHttpClient                httpClient;
+    private OkHttpProxyInfo             httpProxy;
+    private WxMaConfig                  wxMaConfig;
 
-    private final WxMaMsgService       kefuService      = new WxMaMsgServiceImpl(this);
-    private final WxMaMediaService     materialService  = new WxMaMediaServiceImpl(this);
-    private final WxMaUserService      userService      = new WxMaUserServiceImpl(this);
-    private final WxMaQrcodeService    qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private final WxMaLiveGoodsService liveGoodsService = new WxMaLiveGoodsServiceImpl(this);
-    private final WxMaAnalysisService  analysisService  = new WxMaAnalysisServiceImpl(this);
-    private final WxMaCodeService      codeService      = new WxMaCodeServiceImpl(this);
-    private final WxMaSettingService   settingService   = new WxMaSettingServiceImpl(this);
-    private final WxMaJsapiService     jsapiService     = new WxMaJsapiServiceImpl(this);
-    private final WxMaShareService     shareService     = new WxMaShareServiceImpl(this);
-    private final WxMaRunService       runService       = new WxMaRunServiceImpl(this);
-    private final WxMaSecCheckService  secCheckService  = new WxMaSecCheckServiceImpl(this);
-    private final WxMaPluginService    pluginService    = new WxMaPluginServiceImpl(this);
-    private final WxMaExpressService   expressService   = new WxMaExpressServiceImpl(this);
-    private final WxMaSubscribeService subscribeService = new WxMaSubscribeServiceImpl(this);
-    private final WxMaCloudService     cloudService     = new WxMaCloudServiceImpl(this);
-    private final WxMaLiveService      liveService      = new WxMaLiveServiceImpl(this);
+    private final WxMaMsgService        kefuService       = new WxMaMsgServiceImpl(this);
+    private final WxMaMediaService      materialService   = new WxMaMediaServiceImpl(this);
+    private final WxMaUserService       userService       = new WxMaUserServiceImpl(this);
+    private final WxMaQrcodeService     qrCodeService     = new WxMaQrcodeServiceImpl(this);
+    private final WxMaLiveGoodsService  liveGoodsService  = new WxMaLiveGoodsServiceImpl(this);
+    private final WxMaAnalysisService   analysisService   = new WxMaAnalysisServiceImpl(this);
+    private final WxMaSchemeService     schemeService     = new WxMaSchemeServiceImpl(this);
+    private final WxMaCodeService       codeService       = new WxMaCodeServiceImpl(this);
+    private final WxMaSettingService    settingService    = new WxMaSettingServiceImpl(this);
+    private final WxMaJsapiService      jsapiService      = new WxMaJsapiServiceImpl(this);
+    private final WxMaShareService      shareService      = new WxMaShareServiceImpl(this);
+    private final WxMaRunService        runService        = new WxMaRunServiceImpl(this);
+    private final WxMaSecCheckService   secCheckService   = new WxMaSecCheckServiceImpl(this);
+    private final WxMaPluginService     pluginService     = new WxMaPluginServiceImpl(this);
+    private final WxMaExpressService    expressService    = new WxMaExpressServiceImpl(this);
+    private final WxMaSubscribeService  subscribeService  = new WxMaSubscribeServiceImpl(this);
+    private final WxMaCloudService      cloudService      = new WxMaCloudServiceImpl(this);
+    private final WxMaLiveService       liveService       = new WxMaLiveServiceImpl(this);
+    private final WxMaLiveMemberService liveMemberService = new WxMaLiveMemberServiceImpl(this);
+    private final WxOcrService          ocrService        = new WxMaOcrServiceImpl(this);
+    private final WxImgProcService      imgProcService    = new WxMaImgProcServiceImpl(this);
+    private final WxMaShopSpuService    shopSpuService    = new WxMaShopSpuServiceImpl(this);
+    private final WxMaShopOrderService  shopOrderService  = new WxMaShopOrderServiceImpl(this);
 
-    private int                        retrySleepMillis = 1000;
-    private int                        maxRetryTimes    = 5;
-    public static final int            ERR_40001        = 40001;
-    public static final int            ERR_42001        = 42001;
-    public static final int            ERR_40014        = 40014;
+    private int                         retrySleepMillis  = 1000;
+    private int                         maxRetryTimes     = 5;
+    public static final int             ERR_40001         = 40001;
+    public static final int             ERR_42001         = 42001;
+    public static final int             ERR_40014         = 40014;
 
     @Override
     public OkHttpClient getRequestHttpClient() {
@@ -284,6 +301,16 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
         return this.execute(SimplePostRequestExecutor.create(this), url, WxGsonBuilder.create().toJson(obj));
     }
 
+    @Override
+    public String post(String url, ToJson obj) throws WxErrorException {
+        return this.post(url, obj.toJson());
+    }
+
+    @Override
+    public String post(String url, JsonObject jsonObject) throws WxErrorException {
+        return this.post(url, jsonObject.toString());
+    }
+
     /**
      * 向微信端发送请求，在这里执行的策略是当发生access_token过期时才去刷新，然后重新执行请求，而不是全局定时请求
      */
@@ -431,18 +458,23 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     }
 
     @Override
+    public WxMaSchemeService getWxMaSchemeService() {
+        return this.schemeService;
+    }
+
+    @Override
     public WxMaLiveGoodsService getLiveGoodsService() {
         return this.liveGoodsService;
     }
 
     @Override
     public WxOcrService getOcrService() {
-        return null;
+        return this.ocrService;
     }
 
     @Override
     public WxImgProcService getImgProcService() {
-        return null;
+        return this.imgProcService;
     }
 
     @Override
@@ -503,5 +535,20 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     @Override
     public WxMaLiveService getLiveService() {
         return this.liveService;
+    }
+
+    @Override
+    public WxMaLiveMemberService getLiveMemberService() {
+        return this.liveMemberService;
+    }
+
+    @Override
+    public WxMaShopOrderService getShopOrderService() {
+        return this.shopOrderService;
+    }
+
+    @Override
+    public WxMaShopSpuService getShopSpuService() {
+        return this.shopSpuService;
     }
 }

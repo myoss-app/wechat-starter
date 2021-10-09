@@ -17,7 +17,7 @@
 
 package com.github.binarywang.wxpay.service.impl;
 
-import java.net.URI;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -27,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpRequestBase;
 
 import com.github.binarywang.wxpay.bean.WxPayApiData;
 import com.github.binarywang.wxpay.config.WxPayConfig;
@@ -182,9 +183,9 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
     }
 
     @Override
-    public String getV3(URI url) throws WxPayException {
+    public String getV3(String url) throws WxPayException {
         try {
-            Request request = new Request.Builder().url(url.toURL())
+            Request request = new Request.Builder().url(url)
                     .addHeader("Accept", "application/json")
                     .addHeader("Content-Type", "application/json")
                     .get()
@@ -247,6 +248,21 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
 
     @Override
     public String postV3(String url, org.apache.http.client.methods.HttpPost httpPost) throws WxPayException {
+        return null;
+    }
+
+    @Override
+    public String patchV3(String s, String s1) throws WxPayException {
+        return null;
+    }
+
+    @Override
+    public String requestV3(String s, HttpRequestBase httpRequestBase) throws WxPayException {
+        return null;
+    }
+
+    @Override
+    public InputStream downloadV3(String s) throws WxPayException {
         return null;
     }
 }
