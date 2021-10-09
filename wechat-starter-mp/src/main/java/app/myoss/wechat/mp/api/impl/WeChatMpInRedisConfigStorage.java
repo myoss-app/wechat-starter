@@ -256,4 +256,8 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
     public WxMpHostConfig getHostConfig() {
         return null;
     }
+
+    @Override
+    public void setHostConfig(WxMpHostConfig wxMpHostConfig) {
+    }
 }

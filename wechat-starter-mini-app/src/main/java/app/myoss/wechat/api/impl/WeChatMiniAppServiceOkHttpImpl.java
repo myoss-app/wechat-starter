@@ -17,10 +17,6 @@
 
 package app.myoss.wechat.api.impl;
 
-import static cn.binarywang.wx.miniapp.constant.WxMaConstants.ErrorCode.ERR_40001;
-import static cn.binarywang.wx.miniapp.constant.WxMaConstants.ErrorCode.ERR_40014;
-import static cn.binarywang.wx.miniapp.constant.WxMaConstants.ErrorCode.ERR_42001;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +34,7 @@ import cn.binarywang.wx.miniapp.api.WxMaCloudService;
 import cn.binarywang.wx.miniapp.api.WxMaCodeService;
 import cn.binarywang.wx.miniapp.api.WxMaExpressService;
 import cn.binarywang.wx.miniapp.api.WxMaJsapiService;
+import cn.binarywang.wx.miniapp.api.WxMaLiveGoodsService;
 import cn.binarywang.wx.miniapp.api.WxMaLiveService;
 import cn.binarywang.wx.miniapp.api.WxMaMediaService;
 import cn.binarywang.wx.miniapp.api.WxMaMsgService;
@@ -49,13 +46,13 @@ import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.api.WxMaSettingService;
 import cn.binarywang.wx.miniapp.api.WxMaShareService;
 import cn.binarywang.wx.miniapp.api.WxMaSubscribeService;
-import cn.binarywang.wx.miniapp.api.WxMaTemplateService;
 import cn.binarywang.wx.miniapp.api.WxMaUserService;
 import cn.binarywang.wx.miniapp.api.impl.WxMaAnalysisServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaCloudServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaCodeServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaExpressServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaJsapiServiceImpl;
+import cn.binarywang.wx.miniapp.api.impl.WxMaLiveGoodsServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaLiveServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMediaServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaMsgServiceImpl;
@@ -66,13 +63,14 @@ import cn.binarywang.wx.miniapp.api.impl.WxMaSecCheckServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSettingServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaShareServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaSubscribeServiceImpl;
-import cn.binarywang.wx.miniapp.api.impl.WxMaTemplateServiceImpl;
 import cn.binarywang.wx.miniapp.api.impl.WxMaUserServiceImpl;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
 import cn.binarywang.wx.miniapp.config.WxMaConfig;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.WxType;
+import me.chanjar.weixin.common.api.WxImgProcService;
+import me.chanjar.weixin.common.api.WxOcrService;
 import me.chanjar.weixin.common.bean.WxAccessToken;
+import me.chanjar.weixin.common.enums.WxType;
 import me.chanjar.weixin.common.error.WxError;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.util.DataUtils;
@@ -107,7 +105,7 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     private final WxMaMediaService     materialService  = new WxMaMediaServiceImpl(this);
     private final WxMaUserService      userService      = new WxMaUserServiceImpl(this);
     private final WxMaQrcodeService    qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private final WxMaTemplateService  templateService  = new WxMaTemplateServiceImpl(this);
+    private final WxMaLiveGoodsService liveGoodsService  = new WxMaLiveGoodsServiceImpl(this);
     private final WxMaAnalysisService  analysisService  = new WxMaAnalysisServiceImpl(this);
     private final WxMaCodeService      codeService      = new WxMaCodeServiceImpl(this);
     private final WxMaSettingService   settingService   = new WxMaSettingServiceImpl(this);
@@ -123,6 +121,10 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
 
     private int                        retrySleepMillis = 1000;
     private int                        maxRetryTimes    = 5;
+    public static final int ERR_40001 = 40001;
+    public static final int ERR_42001 = 42001;
+    public static final int ERR_40014 = 40014;
+
 
     @Override
     public OkHttpClient getRequestHttpClient() {
@@ -370,6 +372,36 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     }
 
     @Override
+    public void addConfig(String miniappId, WxMaConfig configStorage) {
+
+    }
+
+    @Override
+    public void removeConfig(String miniappId) {
+
+    }
+
+    @Override
+    public void setMultiConfigs(Map<String, WxMaConfig> configs) {
+
+    }
+
+    @Override
+    public void setMultiConfigs(Map<String, WxMaConfig> configs, String defaultMiniappId) {
+
+    }
+
+    @Override
+    public boolean switchover(String mpId) {
+        return false;
+    }
+
+    @Override
+    public WxMaService switchoverTo(String miniappId) {
+        return null;
+    }
+
+    @Override
     public void setRetrySleepMillis(int retrySleepMillis) {
         this.retrySleepMillis = retrySleepMillis;
     }
@@ -400,8 +432,18 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     }
 
     @Override
-    public WxMaTemplateService getTemplateService() {
-        return this.templateService;
+    public WxMaLiveGoodsService getLiveGoodsService() {
+        return this.liveGoodsService;
+    }
+
+    @Override
+    public WxOcrService getOcrService() {
+        return null;
+    }
+
+    @Override
+    public WxImgProcService getImgProcService() {
+        return null;
     }
 
     @Override
