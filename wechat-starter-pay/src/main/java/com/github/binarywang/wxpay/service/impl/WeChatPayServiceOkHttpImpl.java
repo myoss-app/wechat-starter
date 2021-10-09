@@ -182,6 +182,16 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
     }
 
     @Override
+    public String postV3WithWechatpaySerial(String s, String s1) throws WxPayException {
+        return null;
+    }
+
+    @Override
+    public String postV3(String s, org.apache.http.client.methods.HttpPost httpPost) throws WxPayException {
+        return null;
+    }
+
+    @Override
     public String getV3(URI url) throws WxPayException {
         try {
             Request request = new Request.Builder().url(url.toURL())

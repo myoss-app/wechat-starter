@@ -58,6 +58,12 @@
         <!-- wechat java tools end -->
 
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+
+        <dependency>
             <!-- 未来考虑移除掉，bug太多 -->
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
