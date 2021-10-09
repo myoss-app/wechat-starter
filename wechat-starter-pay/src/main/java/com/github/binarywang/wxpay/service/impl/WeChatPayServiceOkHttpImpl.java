@@ -182,16 +182,6 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
     }
 
     @Override
-    public String postV3WithWechatpaySerial(String s, String s1) throws WxPayException {
-        return null;
-    }
-
-    @Override
-    public String postV3(String s, org.apache.http.client.methods.HttpPost httpPost) throws WxPayException {
-        return null;
-    }
-
-    @Override
     public String getV3(URI url) throws WxPayException {
         try {
             Request request = new Request.Builder().url(url.toURL())
@@ -218,5 +208,45 @@ public class WeChatPayServiceOkHttpImpl extends BaseWxPayServiceImpl {
             log.error("\n【请求地址】：{}\n【异常信息】：{}", url, e.getMessage());
             throw new WxPayException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public String postV3WithWechatpaySerial(String url, String requestStr) throws WxPayException {
+        try {
+            String serialNumber = getConfig().getVerifier()
+                    .getValidCertificate()
+                    .getSerialNumber()
+                    .toString(16)
+                    .toUpperCase();
+            RequestBody requestBody = RequestBody.create(MediaType.get("application/json"), requestStr);
+            Request request = new Request.Builder().url(url)
+                    .addHeader("Accept", "application/json")
+                    .addHeader("Wechatpay-Serial", serialNumber)
+                    .post(requestBody)
+                    .build();
+            Response response = getRequestHttpClient().newCall(request).execute();
+            String responseString = response.body().string();
+            if (StringUtils.isBlank(responseString)) {
+                throw new WxPayException("响应信息为空");
+            }
+            // v3已经改为通过状态码判断200 204 成功
+            int statusCode = response.code();
+            if (200 == statusCode || 204 == statusCode) {
+                log.info("\n【请求地址】：{}\n【请求数据】：{}\n【响应数据】：{}", url, requestStr, responseString);
+                return responseString;
+            } else {
+                // 有错误提示信息返回
+                JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
+                throw new WxPayException(jsonObject.get("message").getAsString());
+            }
+        } catch (Exception e) {
+            log.error("\n【请求地址】：{}\n【请求数据】：{}\n【异常信息】：{}", url, requestStr, e.getMessage());
+            throw new WxPayException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public String postV3(String url, org.apache.http.client.methods.HttpPost httpPost) throws WxPayException {
+        return null;
     }
 }

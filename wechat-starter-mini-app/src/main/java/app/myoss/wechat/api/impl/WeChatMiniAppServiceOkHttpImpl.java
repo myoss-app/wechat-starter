@@ -105,7 +105,7 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
     private final WxMaMediaService     materialService  = new WxMaMediaServiceImpl(this);
     private final WxMaUserService      userService      = new WxMaUserServiceImpl(this);
     private final WxMaQrcodeService    qrCodeService    = new WxMaQrcodeServiceImpl(this);
-    private final WxMaLiveGoodsService liveGoodsService  = new WxMaLiveGoodsServiceImpl(this);
+    private final WxMaLiveGoodsService liveGoodsService = new WxMaLiveGoodsServiceImpl(this);
     private final WxMaAnalysisService  analysisService  = new WxMaAnalysisServiceImpl(this);
     private final WxMaCodeService      codeService      = new WxMaCodeServiceImpl(this);
     private final WxMaSettingService   settingService   = new WxMaSettingServiceImpl(this);
@@ -121,10 +121,9 @@ public class WeChatMiniAppServiceOkHttpImpl implements WxMaService, RequestHttp<
 
     private int                        retrySleepMillis = 1000;
     private int                        maxRetryTimes    = 5;
-    public static final int ERR_40001 = 40001;
-    public static final int ERR_42001 = 42001;
-    public static final int ERR_40014 = 40014;
-
+    public static final int            ERR_40001        = 40001;
+    public static final int            ERR_42001        = 42001;
+    public static final int            ERR_40014        = 40014;
 
     @Override
     public OkHttpClient getRequestHttpClient() {

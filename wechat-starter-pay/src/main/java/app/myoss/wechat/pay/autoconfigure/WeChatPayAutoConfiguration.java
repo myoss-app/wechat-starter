@@ -68,7 +68,7 @@ public class WeChatPayAutoConfiguration {
             try {
                 payConfig.setSslContext(payConfig.initSSLContext());
             } catch (WxPayException e) {
-                log.info("获取SslContext异常:{}", e);
+                log.warn("获取SslContext异常 => appId: {}", config.getAppId(), e);
             }
         }
         return wxPayService;

@@ -64,6 +64,7 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
      * Spring RedisTemplate
      */
     private StringRedisTemplate          redisTemplate;
+    private WxMpHostConfig               hostConfig;
 
     @Override
     public String getAccessToken() {
@@ -254,10 +255,11 @@ public class WeChatMpInRedisConfigStorage implements WxMpConfigStorage {
 
     @Override
     public WxMpHostConfig getHostConfig() {
-        return null;
+        return hostConfig;
     }
 
     @Override
     public void setHostConfig(WxMpHostConfig wxMpHostConfig) {
+        this.hostConfig = wxMpHostConfig;
     }
 }
