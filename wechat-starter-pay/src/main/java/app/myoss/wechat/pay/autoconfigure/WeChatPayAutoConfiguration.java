@@ -55,7 +55,6 @@ public class WeChatPayAutoConfiguration {
         WeChatMp config = weChatPayProperties.getConfig();
         WxPayConfig payConfig = new WxPayConfig();
         WxPayService wxPayService = new WeChatPayServiceOkHttpImpl();
-        wxPayService.setConfig(payConfig);
         payConfig.setAppId(config.getAppId());
         payConfig.setMchId(config.getMchId());
         payConfig.setMchKey(config.getMchKey());
@@ -71,6 +70,7 @@ public class WeChatPayAutoConfiguration {
                 log.warn("获取SslContext异常 => appId: {}", config.getAppId(), e);
             }
         }
+        wxPayService.setConfig(payConfig);
         return wxPayService;
     }
 }
