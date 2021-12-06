@@ -13,39 +13,44 @@
 - [maven][1]
 - [the latest JAR][2]
 
-[1]: https://repo1.maven.org/maven2/app/myoss/wechat/wechat-starter-parent/  
+[1]: https://repo1.maven.org/maven2/app/myoss/wechat/wechat-starter-parent/
+
 [2]: https://search.maven.org/remote_content?g=app.myoss.wechat&a=wechat-starter-parent&v=LATEST
 
 ## Maven
 
 ```xml
+
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-parent</artifactId>
-    <version>1.1.5.RELEASE</version>
+    <version>1.1.6.RELEASE</version>
 </dependency>
 ```
 
 ```xml
+
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-core</artifactId>
-    <version>1.1.5.RELEASE</version>
+    <version>1.1.6.RELEASE</version>
 </dependency>
 ```
 
 ```xml
+
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-mp</artifactId>
-    <version>1.1.5.RELEASE</version>
+    <version>1.1.6.RELEASE</version>
 </dependency>
 ```
 
 ```xml
+
 <dependency>
     <groupId>app.myoss.wechat</groupId>
     <artifactId>wechat-starter-mini-app</artifactId>
-    <version>1.1.5.RELEASE</version>
+    <version>1.1.6.RELEASE</version>
 </dependency>
 ```

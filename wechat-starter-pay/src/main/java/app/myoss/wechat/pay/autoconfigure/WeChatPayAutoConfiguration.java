@@ -17,6 +17,11 @@
 
 package app.myoss.wechat.pay.autoconfigure;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -52,25 +57,37 @@ public class WeChatPayAutoConfiguration {
     @ConditionalOnMissingBean
     @Bean
     public WxPayService wxPayService(WeChatPayProperties weChatPayProperties) {
+        List<WeChatMp> configs = new ArrayList<>();
         WeChatMp config = weChatPayProperties.getConfig();
-        WxPayConfig payConfig = new WxPayConfig();
-        WxPayService wxPayService = new WeChatPayServiceOkHttpImpl();
-        payConfig.setAppId(config.getAppId());
-        payConfig.setMchId(config.getMchId());
-        payConfig.setMchKey(config.getMchKey());
-        payConfig.setNotifyUrl(config.getNotifyUrl());
-        payConfig.setTradeType(config.getTradeType());
-        payConfig.setKeyPath(config.getKeyPath());
-        payConfig.setSubMchId(config.getSubMchId());
-        payConfig.setSubAppId(config.getSubAppId());
-        if (StringUtils.isNotBlank(config.getKeyPath())) {
-            try {
-                payConfig.setSslContext(payConfig.initSSLContext());
-            } catch (WxPayException e) {
-                log.warn("获取SslContext异常 => appId: {}", config.getAppId(), e);
+        if (null != config) {
+            configs.add(config);
+        }
+        Map<String, WeChatMp> configMap = weChatPayProperties.getConfigs();
+        if (null != configMap) {
+            for (Map.Entry<String, WeChatMp> entry : configMap.entrySet()) {
+                configs.add(entry.getValue());
             }
         }
-        wxPayService.setConfig(payConfig);
+        WxPayService wxPayService = new WeChatPayServiceOkHttpImpl();
+        wxPayService.setMultiConfig(configs.stream().map(item -> {
+            WxPayConfig payConfig = new WxPayConfig();
+            payConfig.setAppId(item.getAppId());
+            payConfig.setMchId(item.getMchId());
+            payConfig.setMchKey(item.getMchKey());
+            payConfig.setNotifyUrl(item.getNotifyUrl());
+            payConfig.setTradeType(item.getTradeType());
+            payConfig.setKeyPath(item.getKeyPath());
+            payConfig.setSubMchId(item.getSubMchId());
+            payConfig.setSubAppId(item.getSubAppId());
+            if (StringUtils.isNotBlank(item.getKeyPath())) {
+                try {
+                    payConfig.setSslContext(payConfig.initSSLContext());
+                } catch (WxPayException e) {
+                    log.warn("获取SslContext异常 => appId: {}", item.getAppId(), e);
+                }
+            }
+            return payConfig;
+        }).collect(Collectors.toMap(WxPayConfig::getAppId, a -> a, (o, n) -> o)));
         return wxPayService;
     }
 }
